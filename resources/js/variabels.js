@@ -1,1 +1,0 @@
-window.app_url = "http://farmasi.test";

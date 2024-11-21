@@ -1,0 +1,138 @@
+div.dataTables_wrapper div.dataTables_length select:focus {
+    /*box-shadow: none !important;*/
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.1rem #86b7fe;
+}
+
+div.dataTables_wrapper div.dataTables_filter label input:focus {
+    /*box-shadow: none !important;*/
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.1rem #86b7fe;
+}
+
+table.dataTable > tbody > tr.child ul.dtr-details > li {
+    text-align: left !important;
+}
+
+table.dataTable tbody td.dtr-control,
+table.dataTable tbody td.middle {
+    /*vertical-align: middle;*/
+}
+
+
+table.table-bordered td {
+    vertical-align: middle;
+    padding-left: 5px;
+    padding-right: 5px;
+    /*text-transform: capitalize !important;*/
+    font-size: 1rem;
+    font-family: "DM Sans", sans-serif;
+}
+
+table th
+{
+    vertical-align: middle;
+    padding-left: 5px;
+    padding-right: 5px;
+    text-transform: uppercase !important;
+    font-size: .8rem;
+    font-family: "DM Sans", sans-serif;
+}
+
+table td
+{
+    vertical-align: middle;
+    padding-left: 5px;
+    padding-right: 5px;
+    /*text-transform: uppercase !important;*/
+    font-size: 1rem;
+    font-family: "DM Sans", sans-serif;
+}
+
+
+table.table-bordered th
+{
+    vertical-align: middle;
+    padding-left: 5px;
+    padding-right: 5px;
+    text-transform: uppercase !important;
+    font-size: .8rem;
+    font-family: "DM Sans", sans-serif;
+}
+
+table.table-striped td {
+    vertical-align: middle;
+    padding-left: 5px;
+    padding-right: 5px;
+    /*text-transform: capitalize !important;*/
+    font-size: 1rem;
+    font-family: "DM Sans", sans-serif;
+}
+
+table.table-striped th
+{
+    vertical-align: middle;
+    padding-left: 5px;
+    padding-right: 5px;
+    text-transform: uppercase !important;
+    font-size: .8rem;
+    font-family: "DM Sans", sans-serif;
+}
+
+/*table.table-striped td {*/
+/*    vertical-align: middle;*/
+/*    padding-left: 5px;*/
+/*    padding-right: 5px;*/
+/*    font-size: .8rem;*/
+/*    font-family: "Tahoma", sans-serif;*/
+/*}*/
+
+/*table.table-striped th*/
+/*{*/
+/*    vertical-align: middle;*/
+/*    padding-left: 5px;*/
+/*    padding-right: 5px;*/
+/*    text-transform: uppercase !important;*/
+/*    font-size: .8rem;*/
+/*    font-family: "Tahoma", sans-serif;*/
+/*}*/
+
+
+
+
+table thead {
+
+    color: #454952;
+    background: #fafafa;
+
+
+}
+
+/*table tbody {*/
+
+/*    font-family: "Segoe UI", sans-serif;*/
+
+
+/*     font-size: .8rem;*/
+
+
+/*}*/
+
+
+table.dataTable > tbody > tr.selected > td.select-checkbox:after,
+table.dataTable > tbody > tr.selected > th.select-checkbox:after {
+
+    margin-top: -18px !important;
+
+}
+.dataTables_filter input {
+    width: 250px !important;
+}
+
+
+
+table.dataTable > tbody > tr {
+
+    /*cursor: pointer;*/
+
+}

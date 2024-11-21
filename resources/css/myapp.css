@@ -1,0 +1,16 @@
+
+/*@import '@fontsource/poppins';*/
+/*@import '@fontsource/ubuntu';*/
+/*@import '@fontsource/manrope';*/
+@import '@fontsource/open-sans';
+@import '@fontsource/dm-sans';
+/*@import '@fontsource/space-grotesk';*/
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+@import 'overlayscrollbars/styles/overlayscrollbars.css';
+@import 'bootstrap-icons/font/bootstrap-icons.min.css';
+@import "adminlte4/dist/css/adminlte.min.css";
+@import 'select2/dist/css/select2.min.css';
+@import 'select2-bootstrap-5-theme/dist/select2-bootstrap-5-theme.min.css';
+@import 'sweetalert2/src/sweetalert2.scss';
+@import 'mystyle.css';
+@import 'ext.scss';

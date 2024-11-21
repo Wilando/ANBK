@@ -1,0 +1,295 @@
+body {
+    /* font-family: "Manrope", sans-serif; */
+    /*font-family: "Open Sans", sans-serif;*/
+
+}
+
+
+
+.btn-primary {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #01579B;
+    --bs-btn-border-color: #01579B;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #0277BD;
+    --bs-btn-hover-border-color: #0097A7;
+    --bs-btn-focus-shadow-rgb: 49, 132, 253;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #0097A7;
+    --bs-btn-active-border-color: #0a53be;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: #01579B;
+    --bs-btn-disabled-border-color: #01579B;
+}
+
+[data-bs-theme=light] {
+    --bs-primary: #A16207;
+    --bs-primary-rgb: #A16207;
+}
+
+[data-bs-theme=dark] {
+    --bs-primary: #A16207;
+    --bs-primary-rgb: #A16207;
+
+
+}
+
+.btn i.fa {
+    pointer-events: none;
+}
+
+.select2-container--bootstrap-5.select2-container--focus .select2-selection,
+.select2-container--bootstrap-5.select2-container--open .select2-selection {
+    /*box-shadow: none !important;*/
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.1rem #86b7fe;
+}
+
+.select2-search__field:focus {
+    box-shadow: none !important;
+}
+
+.form-floating .select2-container--bootstrap-5 .select2-selection {
+    height: calc(3.5rem + 2px);
+    padding: 1rem 0.75rem;
+}
+
+.form-floating .select2-container--bootstrap-5 .select2-selection > .select2-selection__rendered {
+    margin-top: 0.6rem;
+    margin-left: 0.25rem;
+}
+
+.xinvalid-feedback {
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: .875em;
+    color: var(--bs-form-invalid-color);
+}
+
+.btn-xs {
+    padding: 0.2rem 0.2rem;
+    font-size: 0.5rem;
+    line-height: 1;
+    border-radius: 0.2rem;
+}
+
+.myDarkcss {
+    background: rgb(15 23 42);
+}
+
+.myLightcss {
+    background: #ffffff;
+}
+
+.myColorprimary {
+    background-color: #FFC807;
+}
+
+.sidebar_minimalis {
+    /*min-width: 200px!important;*/
+    max-width: 200px !important;
+    font-family:  "Open Sans", sans-serif;
+    font-weight: 100 900;
+    font-display: swap;
+    font-style: normal;
+    font-size: .8rem;
+
+}
+
+.user-body
+{
+    /*font-family:  "Open Sans", sans-serif;*/
+}
+
+
+.app-content-header
+{
+    /*font-family:  "Open Sans", sans-serif;*/
+
+}
+
+.modal-header
+{
+    /*font-family:  "Open Sans", sans-serif;*/
+    background-color: rgb(15 23 42);
+}
+
+.modal-title
+{
+    font-size: 1rem;
+    text-transform: capitalize;
+}
+
+
+.font_sidebar_wrapper {
+    font-size: 1rem;
+}
+
+
+.sidebar-wrapper .sidebar-menu > .nav-item > .nav-link.active:not(:hover) {
+    color: var(--bs-light);
+    /*color: var(--lte-sidebar-menu-active-color);*/
+    background-color: var(--bs-primary);
+}
+
+.sidebar-wrapper .sidebar-menu > .nav-item > .nav-link:hover {
+    color: var(--bs-light);
+    background-color: var(--bs-primary);
+}
+
+.sidebar-wrapper .sidebar-menu > .nav-item > .nav-link:open {
+    color: var(--bs-light);
+    background-color: var(--bs-primary);
+}
+
+.sidebar-wrapper .nav-treeview > .nav-item > .nav-link:hover {
+    color: var(--bs-light);
+    background-color: var(--bs-primary);
+}
+
+
+.sidebar-wrapper .nav-treeview > .nav-item > .nav-link.active {
+    color: var(--bs-light);
+    background-color: var(--bs-primary);
+}
+
+.card-body {
+    padding-left: 20px;
+    padding-right: 20px;
+    /* background-image: url(../../public/img/panel_bg.png); */
+}
+
+.form_color_gradient_blue_black
+{
+    background-image: linear-gradient(to top, #09203f 0%, #537895 100%);
+    color: white;
+}
+
+.form_color_gradient_light_gray
+{
+
+    /*background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);*/
+    background-color: #fafafa;
+    color: black;
+}
+
+.form_color_gradient_light_gray  .form-control
+{
+    /*border: var(--bs-border-width) solid #6c757d;*/
+
+}
+
+.form_color_gradient_light_gray  .form-select
+{
+    /*border: var(--bs-border-width) solid #6c757d;*/
+
+}
+
+.form_color_gradient_light_gray  .select2-container--bootstrap-5 .select2-selection
+{
+    /*border: var(--bs-border-width) solid #6c757d;*/
+
+}
+
+.btn-large-action {
+    font-size: 1.25rem;
+    padding: 0.75rem 1.5rem;
+}
+.btn-large-action .icon {
+    margin-right: 0.5rem;
+}
+
+.btn-success-custom-gradient {
+    background-image: linear-gradient(to top, #0ba360 0%, #3cba92 100%);
+}
+
+.select2-selection--single {
+    height: 100% !important;
+}
+.select2-selection__rendered{
+    word-wrap: break-word !important;
+    text-overflow: inherit !important;
+    white-space: normal !important;
+}
+
+
+
+/*.form-control:hover {*/
+/*    background-color: #e0f7fa;*/
+/*}*/
+
+
+/*.form-control:hover {*/
+/*    border-color: #008080;*/
+/*}*/
+.form-control {
+    border: var(--bs-border-width) solid #dddddd;
+}
+.form-control:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.1rem #86b7fe;
+}
+.form-select:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.1rem #86b7fe;
+}
+
+
+.btn-label {
+    position: relative;
+    left: -12px;
+    display: inline-block;
+    padding: 6px 12px;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 3px 0 0 3px;
+}
+.btn-label-sm {
+    position: relative;
+    left: -9px;
+    display: inline-block;
+    padding: 4px 8px;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 3px 0 0 3px;
+}
+.btn-labeled {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+.table-align-top-left th ,
+.table-align-top-left td {
+  vertical-align: top;
+  text-align: left;
+}
+.text-noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+table.table.table-bs-datatable > :not(caption) > * > * {
+  background-color: transparent;
+}
+table.table.table-bs-datatable thead tr th {
+  text-align: center;
+  vertical-align: middle;
+}
+table.table.table-bs-datatable thead tr.tr-dummy th {
+  padding: 0px;
+}
+table.table.table-bs-datatable thead tr:last-child th,
+table.table.table-bs-datatable thead tr th.border-bottom-bold {
+  border-bottom: 2px solid;
+}
+table.table.table-bs-datatable thead tr.border-info th {
+  border-color: #50A5F1;
+}
+table.table.table-bs-datatable tbody tr td {
+  vertical-align: middle;
+}
+/*.btn {*/
+/*    margin-bottom: 10px;*/
+/*}*/

@@ -1,0 +1,7 @@
+@import '@fontsource/poppins';
+@import '@fontsource/ubuntu';
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+/*overlayscrollbars@2.3.0/styles/overlayscrollbars.min.css*/
+@import 'overlayscrollbars/styles/overlayscrollbars.css';
+@import "adminlte4/dist/css/adminlte.min.css";
+@import 'mystyle.css';
