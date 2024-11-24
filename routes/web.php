@@ -170,5 +170,19 @@ Route::group(['prefix' => 'app', 'middleware' => ['web', 'auth']], function () {
             Route::get('select-data', [\App\Http\Controllers\backend\SoalController::class, 'selectData']);
             Route::get('remote', [\App\Http\Controllers\backend\SoalController::class, 'remote']);
         });
+        Route::group(['prefix' => 'ujian'], function () {
+            Route::get('/', [\App\Http\Controllers\view\UjianController::class, 'index'])->name('app.ujian');
+            Route::get('datatable', [\App\Http\Controllers\backend\UjianController::class, 'datatable']);
+            Route::get('data', [\App\Http\Controllers\backend\UjianController::class, 'index']);
+            Route::get('show/{id}', [\App\Http\Controllers\backend\UjianController::class, 'show']);
+            Route::post('store', [\App\Http\Controllers\backend\UjianController::class, 'store']);
+            Route::post('store-bulk', [\App\Http\Controllers\backend\UjianController::class, 'storeBulk']);
+            Route::put('update/{id}', [\App\Http\Controllers\backend\UjianController::class, 'update']);
+            Route::delete('delete/{id}', [\App\Http\Controllers\backend\UjianController::class, 'destroy']);
+            Route::delete('bulk-delete', [\App\Http\Controllers\backend\UjianController::class, 'bulkDelete']);
+            Route::put('bulk-update', [\App\Http\Controllers\backend\UjianController::class, 'bulkUpdate']);
+            Route::get('select-data', [\App\Http\Controllers\backend\UjianController::class, 'selectData']);
+            Route::get('remote', [\App\Http\Controllers\backend\UjianController::class, 'remote']);
+        });
     });
 });

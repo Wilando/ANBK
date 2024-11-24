@@ -121,10 +121,9 @@
                                     </th>
 
                                     <th>No.</th>
-                                    <th>Soal</th>
-                                    <th>Tipe</th>
+                                    <th>Nama Ujian</th>
                                     <th>Topic</th>
-                                    <th>Status</th>
+                                    <th>Author</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -146,19 +145,19 @@
 
 
 @can($permissionRead)
-@include("panel.soal.modalFilter")
-@include("panel.soal.modalRincian")
+@include("panel.ujian.modalFilter")
+@include("panel.ujian.modalRincian")
 @endcan
 
 
 @canany([$permissionCreate, $permissionUpdate])
-@include("panel.soal.modalForm")
+@include("panel.ujian.modalForm")
 @endcanany
 
 
 
 @canany([$permissionUpdate, $permissionValidation])
-@include("panel.soal.modalBulk")
+@include("panel.ujian.modalBulk")
 @endcanany
 
 @endsection
@@ -183,7 +182,7 @@
     src="{{ asset("myjs/select2/init.js") }}?v={{ filemtime(public_path('myjs/select2/init.js')) }}"></script>
 <script
     src="{{ asset("myjs/dataTable/multiple_init.js") }}?v={{ filemtime(public_path('myjs/dataTable/multiple_init.js')) }}"></script>
-<script src="{{ asset("myjs/app/soal/init.js") }}?v={{ filemtime(public_path('myjs/app/soal/init.js')) }}"
+<script src="{{ asset("myjs/app/ujian/init.js") }}?v={{ filemtime(public_path('myjs/app/ujian/init.js')) }}"
     defer></script>
 @endcan
 @endpush

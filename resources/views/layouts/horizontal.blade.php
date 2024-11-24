@@ -124,6 +124,12 @@
                     Bank Soal
                   </a>
                 @endcan
+                @can('soal ujian')
+                  <a href="{{ url('app/ujian') }}"
+                    class="dropdown-item {{ request()->is('app/ujian') ? 'active' : '' }}">
+                    Ujian
+                  </a>
+                @endcan
               </div>
             </li>
             @include('layouts.ekstra')

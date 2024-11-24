@@ -67,7 +67,7 @@ async function load_dt() {
                 style: 'multi',
             },
             ajax: {
-                url: app_url + '/soal/datatable',
+                url: app_url + '/ujian/datatable',
                 type: "GET",
                 data: function (d) {
                     d.mulai = $('#filter_mulai_created_at').val();
@@ -127,18 +127,6 @@ async function load_dt() {
                     name: 'name',
                 },
                 {
-                    data: 'question_type.name',
-                    name: 'name',
-                    render: function (data, type, row, meta) {
-                        if (data == "multiple_choice_single_answer") {
-                            return "Pilihan Ganda (Satu Jawaban)";
-                        }
-                        else if (data == "multiple_choice_multiple_answer"){
-                            return "Pilihan Ganda (Lebih Dari Satu Jawaban)"
-                        }
-                    },
-                },
-                {
                     data: 'topics',
                     name: 'name',
                     render: function (data) {
@@ -150,17 +138,16 @@ async function load_dt() {
                     },
                 },
                 {
-                    data: 'is_active',
-                    name: 'is_active',
-                    searchable: false,
-                    className: "dt-center dt-nowrap",
+                    data: 'quiz_authors',
+                    name: 'name',
                     render: function (data) {
-                        if (data != null) {
-                            return isActivehtml(data, 'Aktif', 'Non Aktif');
-                        }
-                        return '';
+                        let nama = "";
+                        data.forEach(element => {
+                            nama += element.author.name;
+                        });
+                        return nama;
                     },
-                }, 
+                },
 
                 {
                     data: 'kosong',
@@ -708,12 +695,12 @@ async function submitForm(event) {
             let response_form;
             if (save_method == 'create') {
                 if (checkPermission(permissionCreate)) {
-                    response_form = await axios.post(app_url + '/soal/store', formData);
+                    response_form = await axios.post(app_url + '/ujian/store', formData);
                 }
             } else {
                 if (checkPermission(permissionUpdate)) {
                     formData.append('_method', 'PUT')
-                    response_form = await axios.post(app_url + '/soal/update/' + idformUpdate, formData);
+                    response_form = await axios.post(app_url + '/ujian/update/' + idformUpdate, formData);
                 }
             }
 

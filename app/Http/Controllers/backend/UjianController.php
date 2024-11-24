@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 
 use Harishdurga\LaravelQuiz\Models\Question;
 use Harishdurga\LaravelQuiz\Models\QuestionOption;
+use Harishdurga\LaravelQuiz\Models\Quiz;
+use Harishdurga\LaravelQuiz\Models\QuizAuthor;
 use App\Models\User;
 use App\Services\hideyoriService;
 
@@ -19,7 +21,7 @@ use Intervention\Image\Facades\Image;
 use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
 
-class SoalController extends Controller
+class UjianController extends Controller
 {
 
 
@@ -27,22 +29,22 @@ class SoalController extends Controller
     {
         $this->valuePrivilege = null;
         $this->middleware('auth');
-        $this->permissionCreate = 'soal create';
-        $this->permissionRead = 'soal read';
-        $this->permissionUpdate = 'soal update';
-        $this->permissionDelete = 'soal delete';
-        $this->permissionValidation = 'soal validation';
-        $this->permissionPrivilege = 'soal privilege';
+        $this->permissionCreate = 'ujian create';
+        $this->permissionRead = 'ujian read';
+        $this->permissionUpdate = 'ujian update';
+        $this->permissionDelete = 'ujian delete';
+        $this->permissionValidation = 'ujian validation';
+        $this->permissionPrivilege = 'ujian privilege';
 
         $this->middleware('permission:' . $this->permissionRead, ['only' => ['index']]);
         $this->middleware('permission:' . $this->permissionCreate, ['only' => ['store']]);
         $this->middleware('permission:' . $this->permissionUpdate, ['only' => ['update']]);
         $this->middleware('permission:' . $this->permissionDelete, ['only' => ['destroy', 'bulkDelete']]);
         $this->middleware('permission:' . $this->permissionValidation . '|' . $this->permissionUpdate, ['only' => ['bulkUpdate']]);
-        $this->model = Question::class;
-        $this->titleData = 'Soal';
+        $this->model = Quiz::class;
+        $this->titleData = 'Ujian';
         $this->columnRef = 'name';
-        $this->logName = 'soal';
+        $this->logName = 'ujian';
         $this->defaultRedirect = 'app/jenis-pakan';
         $this->primaryKey = "id";
         $this->columnValidation = 'is_active';
@@ -62,7 +64,7 @@ class SoalController extends Controller
         $active = $request->get('is_active');
         $topic = $request->get('topic');
         
-        $data = $this->model::with(["options", "topics", "question_type"])
+        $data = $this->model::with(["quizAuthors.author", "topics"])
         ->whereHas('topics', function ($query) use ($topic) {
             if ($topic != '') {
                 $query->where('topic_id', $topic);
@@ -93,18 +95,17 @@ class SoalController extends Controller
             ->toJson();
     }
 
-    private function _insert($reqData, $id_topic, $questionOption, $is_correct)
+    private function _insert($reqData, $id_topic)
     {
         $processData = $this->model::create($reqData);
 
         $processData->topics()->attach([$id_topic]);
-        foreach ($questionOption as $index => $option) {
-            QuestionOption::create([
-                'question_id' => $processData->id,
-                'name' => $option,
-                'is_correct' => in_array($index + 1, $is_correct) ? true : false
-            ]); 
-        }
+        QuizAuthor::create([
+            'quiz_id' => $processData->id,
+            'author_id' => auth()->user()->id,
+            'author_type' => get_class(auth()->user()),
+            'author_role' => "guru",
+        ]);
 
         $newAttributes = $processData->getAttributes();
         $properties = [
@@ -129,19 +130,11 @@ class SoalController extends Controller
     public function store(Request $request)
     {
         $rule = [
-            'soal' => 'required',
-            'tipe_soal' => 'required',
+            'nama_ujian' => 'required',
             'topic' => 'required',
-            'option_1' => 'required',
-            'option_2' => 'required',
-            'option_3' => 'required',
-            'option_4' => 'required',
-            'jawaban' => 'required|array|min:1',
+            'mulai' => 'required',
+            'selesai' => 'required',
         ];
-
-        if (xhasPermission($this->permissionValidation)) {
-            $rule[$this->columnValidation] = 'required';
-        }
 
         $attribute_rule = [];
 
@@ -152,23 +145,17 @@ class SoalController extends Controller
 
 
         $reqData = [
-            'name' => $request->input('soal'),
-            'question_type_id' => $request->input('tipe_soal')
+            'name' => $request->input('nama_ujian'),
+            'valid_from' => $request->input('mulai'),
+            'valid_upto' => $request->input('selesai'),
+            'negative_marking_settings'=>[
+                'enable_negative_marks' => false,
+                'negative_marking_type' => 'fixed',
+                'negative_mark_value' => 0,
+            ]
         ];
-        $questionOption = [
-            $request->input('option_1')
-            ,$request->input('option_2')
-            ,$request->input('option_3')
-            ,$request->input('option_4'),
-        ];
-        $reqData['is_active'] = 0;
-        if (xhasPermission($this->permissionValidation)) {
-            $is_active = $request->input('is_active');
-            $reqData['is_active'] = $is_active;
-        }
-
         
-        $res = $this->myService->trx_db($this->_insert($reqData, $request->input('topic'), $questionOption, $request->input('jawaban')));
+        $res = $this->myService->trx_db($this->_insert( $reqData, $request->input('topic') ));
 
         if ($request->wantsJson()) {
             return response()->json($res, Response::HTTP_CREATED);
