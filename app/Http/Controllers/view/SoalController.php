@@ -6,23 +6,23 @@ use App\Http\Controllers\Controller;
 
 use Vinkla\Hashids\Facades\Hashids;
 
-class MisiPemdaController extends Controller
+class SoalController extends Controller
 {
     public function __construct()
     {
-        $this->permissionCreate = 'topic create';
-        $this->permissionRead = 'topic read';
-        $this->permissionUpdate = 'topic update';
-        $this->permissionDelete = 'topic delete';
-        $this->permissionValidation = 'topic validation';
-        $this->permissionPrivilege = 'topic privilege';
+        $this->permissionCreate = 'soal create';
+        $this->permissionRead = 'soal read';
+        $this->permissionUpdate = 'soal update';
+        $this->permissionDelete = 'soal delete';
+        $this->permissionValidation = 'soal validation';
+        $this->permissionPrivilege = 'soal privilege';
     }
 
     public function index()
     {       
 
-        $data['titlePage'] = 'Topic';
-        $data['descriptionPage'] = 'halaman yang digunakan untuk mengolah data topic';
+        $data['titlePage'] = 'Soal';
+        $data['descriptionPage'] = 'halaman yang digunakan untuk mengolah data soal';
         $data['iconPage'] = '<i class="fa-fw nav-icon bi bi-box2-heart-fill me-2"></i>';
 
         $data['permissionCreate'] = $this->permissionCreate;
@@ -32,7 +32,7 @@ class MisiPemdaController extends Controller
         $data['permissionDelete'] = $this->permissionDelete;
         $data['permissionPrivilege'] = $this->permissionPrivilege;
 
-        return view('panel.misi_pemda.index', $data);
+        return view('panel.soal.index', $data);
     }
 
 

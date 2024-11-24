@@ -108,14 +108,20 @@
 
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
-                <i class="uil-apps me-2"></i>Master Data <div class="arrow-down"></div>
+                <i class="uil-apps me-2"></i>Management Soal<div class="arrow-down"></div>
               </a>
               <div class="dropdown-menu" aria-labelledby="topnav-pages">
 
-                @can('misi pemda read')
+                @can('topic read')
                   <a href="{{ url('app/misi-pemda') }}"
                     class="dropdown-item {{ request()->is('app/misi-pemda') ? 'active' : '' }}">
-                    Misi Pemda
+                    Topic
+                  </a>
+                @endcan
+                @can('soal read')
+                  <a href="{{ url('app/soal') }}"
+                    class="dropdown-item {{ request()->is('app/soal') ? 'active' : '' }}">
+                    Bank Soal
                   </a>
                 @endcan
               </div>

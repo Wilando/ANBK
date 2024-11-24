@@ -156,5 +156,19 @@ Route::group(['prefix' => 'app', 'middleware' => ['web', 'auth']], function () {
             Route::get('select-data', [\App\Http\Controllers\backend\MisiPemdaController::class, 'selectData']);
             Route::get('remote', [\App\Http\Controllers\backend\MisiPemdaController::class, 'remote']);
         });
+        Route::group(['prefix' => 'soal'], function () {
+            Route::get('/', [\App\Http\Controllers\view\SoalController::class, 'index'])->name('app.soal');
+            Route::get('datatable', [\App\Http\Controllers\backend\SoalController::class, 'datatable']);
+            Route::get('data', [\App\Http\Controllers\backend\SoalController::class, 'index']);
+            Route::get('show/{id}', [\App\Http\Controllers\backend\SoalController::class, 'show']);
+            Route::post('store', [\App\Http\Controllers\backend\SoalController::class, 'store']);
+            Route::post('store-bulk', [\App\Http\Controllers\backend\SoalController::class, 'storeBulk']);
+            Route::put('update/{id}', [\App\Http\Controllers\backend\SoalController::class, 'update']);
+            Route::delete('delete/{id}', [\App\Http\Controllers\backend\SoalController::class, 'destroy']);
+            Route::delete('bulk-delete', [\App\Http\Controllers\backend\SoalController::class, 'bulkDelete']);
+            Route::put('bulk-update', [\App\Http\Controllers\backend\SoalController::class, 'bulkUpdate']);
+            Route::get('select-data', [\App\Http\Controllers\backend\SoalController::class, 'selectData']);
+            Route::get('remote', [\App\Http\Controllers\backend\SoalController::class, 'remote']);
+        });
     });
 });

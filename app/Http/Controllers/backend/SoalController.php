@@ -4,8 +4,8 @@ namespace App\Http\Controllers\backend;
 
 use App\Http\Controllers\Controller;
 
-use App\Models\MisiPemda;
-use Harishdurga\LaravelQuiz\Models\Topic;
+use Harishdurga\LaravelQuiz\Models\Question;
+use Harishdurga\LaravelQuiz\Models\QuestionOption;
 use App\Models\User;
 use App\Services\hideyoriService;
 
@@ -19,7 +19,7 @@ use Intervention\Image\Facades\Image;
 use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
 
-class MisiPemdaController extends Controller
+class SoalController extends Controller
 {
 
 
@@ -27,22 +27,22 @@ class MisiPemdaController extends Controller
     {
         $this->valuePrivilege = null;
         $this->middleware('auth');
-        $this->permissionCreate = 'topic create';
-        $this->permissionRead = 'topic read';
-        $this->permissionUpdate = 'topic update';
-        $this->permissionDelete = 'topic delete';
-        $this->permissionValidation = 'topic validation';
-        $this->permissionPrivilege = 'topic privilege';
+        $this->permissionCreate = 'soal create';
+        $this->permissionRead = 'soal read';
+        $this->permissionUpdate = 'soal update';
+        $this->permissionDelete = 'soal delete';
+        $this->permissionValidation = 'soal validation';
+        $this->permissionPrivilege = 'soal privilege';
 
         $this->middleware('permission:' . $this->permissionRead, ['only' => ['index']]);
         $this->middleware('permission:' . $this->permissionCreate, ['only' => ['store']]);
         $this->middleware('permission:' . $this->permissionUpdate, ['only' => ['update']]);
         $this->middleware('permission:' . $this->permissionDelete, ['only' => ['destroy', 'bulkDelete']]);
         $this->middleware('permission:' . $this->permissionValidation . '|' . $this->permissionUpdate, ['only' => ['bulkUpdate']]);
-        $this->model = Topic::class;
-        $this->titleData = 'Topic';
+        $this->model = Question::class;
+        $this->titleData = 'Soal';
         $this->columnRef = 'name';
-        $this->logName = 'topic';
+        $this->logName = 'soal';
         $this->defaultRedirect = 'app/jenis-pakan';
         $this->primaryKey = "id";
         $this->columnValidation = 'is_active';
@@ -57,7 +57,7 @@ class MisiPemdaController extends Controller
 
     public function datatable(Request $request)
     {
-        $data = $this->model::query();
+        $data = $this->model::with(["options", "topics", "question_type"]);
 
         $mulai = $request->get('mulai');
         $selesai = $request->get('selesai');
@@ -81,7 +81,7 @@ class MisiPemdaController extends Controller
                 return '';
             })
             ->addColumn('hashId', function ($row) {
-                return encodeId($row->id_misi);
+                return encodeId($row->id);
             })
             ->addColumn('encode_row', function ($row) {
                 return json_encode($row);
@@ -89,9 +89,18 @@ class MisiPemdaController extends Controller
             ->toJson();
     }
 
-    private function _insert($reqData)
+    private function _insert($reqData, $id_topic, $questionOption, $is_correct)
     {
         $processData = $this->model::create($reqData);
+
+        $processData->topics()->attach([$id_topic]);
+        foreach ($questionOption as $index => $option) {
+            QuestionOption::create([
+                'question_id' => $processData->id,
+                'name' => $option,
+                'is_correct' => in_array($index + 1, $is_correct) ? true : false
+            ]); 
+        }
 
         $newAttributes = $processData->getAttributes();
         $properties = [
@@ -116,7 +125,14 @@ class MisiPemdaController extends Controller
     public function store(Request $request)
     {
         $rule = [
-            'name' => 'required',
+            'soal' => 'required',
+            'tipe_soal' => 'required',
+            'topic' => 'required',
+            'option_1' => 'required',
+            'option_2' => 'required',
+            'option_3' => 'required',
+            'option_4' => 'required',
+            'jawaban' => 'required|array|min:1',
         ];
 
         if (xhasPermission($this->permissionValidation)) {
@@ -132,17 +148,23 @@ class MisiPemdaController extends Controller
 
 
         $reqData = [
-            'name' => $request->input('name'),
+            'name' => $request->input('soal'),
+            'question_type_id' => $request->input('tipe_soal')
+        ];
+        $questionOption = [
+            $request->input('option_1')
+            ,$request->input('option_2')
+            ,$request->input('option_3')
+            ,$request->input('option_4'),
         ];
         $reqData['is_active'] = 0;
         if (xhasPermission($this->permissionValidation)) {
             $is_active = $request->input('is_active');
-
             $reqData['is_active'] = $is_active;
         }
 
-
-        $res = $this->myService->trx_db($this->_insert($reqData));
+        
+        $res = $this->myService->trx_db($this->_insert($reqData, $request->input('topic'), $questionOption, $request->input('jawaban')));
 
         if ($request->wantsJson()) {
             return response()->json($res, Response::HTTP_CREATED);
@@ -163,11 +185,20 @@ class MisiPemdaController extends Controller
     }
 
 
-    private function _update($master, $reqData)
+    private function _update($master, $reqData, $id_topic, $questionOption, $is_correct)
     {
 
         $oldAttributes = $master->getOriginal();
-
+        $master->topics()->sync([$id_topic]);
+        $option_sebelum = $master->options;
+        
+        foreach ($option_sebelum as $index => $option) {
+            $option->update([
+                'question_id' => $master->id,
+                'name' => $questionOption[$index],
+                'is_correct' => in_array($index + 1, $is_correct) ? true : false
+            ]); 
+        }
         $processData = $master->update($reqData);
 
         $changes = $master->getChanges();
@@ -200,7 +231,14 @@ class MisiPemdaController extends Controller
         $master = $this->model::findOrfail(decodeId($id));
         $masterview = $this->model::query()->where('id', $id)->first();
         $rule = [
-            'name' => 'required',
+            'soal' => 'required',
+            'tipe_soal' => 'required',
+            'topic' => 'required',
+            'option_1' => 'required',
+            'option_2' => 'required',
+            'option_3' => 'required',
+            'option_4' => 'required',
+            'jawaban' => 'required|array|min:1',
         ];
 
 
@@ -218,7 +256,14 @@ class MisiPemdaController extends Controller
 
 
         $reqData = [
-            'name' => $request->input('name'),
+            'name' => $request->input('soal'),
+            'question_type_id' => $request->input('tipe_soal')
+        ];
+        $questionOption = [
+            $request->input('option_1')
+            ,$request->input('option_2')
+            ,$request->input('option_3')
+            ,$request->input('option_4'),
         ];
 
 
@@ -231,7 +276,7 @@ class MisiPemdaController extends Controller
             $reqData['is_active'] = $is_active;
         }
 
-        $res = $this->myService->trx_db($this->_update($master, $reqData));
+        $res = $this->myService->trx_db($this->_update($master, $reqData, $request->input('topic'), $questionOption, $request->input('jawaban')));
 
 
         if ($request->wantsJson()) {
@@ -245,11 +290,7 @@ class MisiPemdaController extends Controller
     {
 
         $oldAttributes = $master->getOriginal();
-
-
-
-
-
+        $master->options()->delete();
         $deleted = $master->delete();
         if ($deleted) {
             $properties['old'] = $oldAttributes;
@@ -471,11 +512,11 @@ class MisiPemdaController extends Controller
 
         $search = $request->search;
         if ($search) {
-            $dataRemote = $dataRemote->where('name', 'like', '%' . $search . '%');
+            $dataRemote = $dataRemote->where('nama_misi', 'like', '%' . $search . '%');
         }
         $dataRemote = $dataRemote
-            ->select('id', 'name as text')
-            ->orderBy('name')
+            ->select('id_misi as id', 'nama_misi as text', 'tahun_awal', 'tahun_akhir')
+            ->orderBy('nama_misi')
             ->limit(100)
             ->get();
 

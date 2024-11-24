@@ -1,9 +1,9 @@
-const permissionCreate = 'topic create';
-const permissionRead = 'topic read';
-const permissionUpdate = 'topic update';
-const permissionDelete = 'topic delete';
-const permissionValidation = 'topic validation';
-const permissionPrivilege = 'topic privilege';
+const permissionCreate = 'soal create';
+const permissionRead = 'soal read';
+const permissionUpdate = 'soal update';
+const permissionDelete = 'soal delete';
+const permissionValidation = 'soal validation';
+const permissionPrivilege = 'soal privilege';
 let tableDT = null;
 let checked_id_array = [];
 let selected_one_row = [];
@@ -67,7 +67,7 @@ async function load_dt() {
                 style: 'multi',
             },
             ajax: {
-                url: app_url + '/misi-pemda/datatable',
+                url: app_url + '/soal/datatable',
                 type: "GET",
                 data: function (d) {
                     d.mulai = $('#filter_mulai_created_at').val();
@@ -125,7 +125,29 @@ async function load_dt() {
                     data: 'name',
                     name: 'name',
                 },
-
+                {
+                    data: 'question_type.name',
+                    name: 'name',
+                    render: function (data, type, row, meta) {
+                        if (data == "multiple_choice_single_answer") {
+                            return "Pilihan Ganda (Satu Jawaban)";
+                        }
+                        else if (data == "multiple_choice_multiple_answer"){
+                            return "Pilihan Ganda (Lebih Dari Satu Jawaban)"
+                        }
+                    },
+                },
+                {
+                    data: 'topics',
+                    name: 'name',
+                    render: function (data) {
+                        let topics = "";
+                        data.forEach(element => {
+                            topics += element.name;
+                        });
+                        return topics;
+                    },
+                },
                 {
                     data: 'is_active',
                     name: 'is_active',
@@ -242,6 +264,20 @@ async function initModal() {
 
     if (checkanyPermission([permissionCreate, permissionUpdate])) {
         formModal = new bootstrap.Modal(document.getElementById('formModal'));
+        await remoteListmodal(app_url + '/misi-pemda/remote', '#topic', 'pilih topic', '#formModal');
+        $('#tipe_soal').on('change', function () {
+            const mode = $(this).val();
+            const $optionsSelect = $('#jawaban');
+            $optionsSelect.select2('destroy');
+            let select = mode == 1 ? false : true;
+            
+            $optionsSelect.select2({
+                placeholder: "Pilih Jawaban",
+                allowClear: true,
+                dropdownParent: $('#formModal'),
+                multiple: select
+            });
+        });
     }
 
 
@@ -252,22 +288,43 @@ async function detailByrow() {
     $("#hideyori_datatable").on("click", ".clickable-detail", async function () {
         if (checkPermission(permissionRead)) {
             let encodedRowDataString = $(this).attr('data-row');
-
-
             let rowDataString = decodeURIComponent(encodedRowDataString);
-
+            $('#dt_asnwer1').html("Option 1");
+            $('#dt_asnwer2').html("Option 2");
+            $('#dt_asnwer3').html("Option 3");
+            $('#dt_asnwer4').html("Option 4");
 
             try {
                 let row = JSON.parse(rowDataString);
 
-
-
-                let id_misi = row.id_misi ?? '';
+                let id = row.id ?? '';
 
                 let name = row.name ?? '';
+                let tipe = '';
+                if (row.question_type.name == "multiple_choice_single_answer") {
+                    tipe = "Pilihan Ganda (Satu Jawaban)";
+                }
+                else if (row.question_type.name == "multiple_choice_multiple_answer"){
+                    tipe = "Pilihan Ganda (Lebih Dari Satu Jawaban)"
+                }
+                let topics = "";
+                row.topics.forEach(element => {
+                    topics += element.name;
+                });
+                let badge_correct = ` <span class="badge text-bg-success">Benar</span>`;
 
                 let is_active = row.is_active ?? '';
-                $('#dt_nama_misi').text(name);
+                $('#dt_soal').text(name);
+                $('#dt_tipe').text(tipe);
+                $('#dt_topic').text(topics);
+                $('#dt_option1').text(row.options[0].name);
+                $('#dt_option2').text(row.options[1].name);
+                $('#dt_option3').text(row.options[2].name);
+                $('#dt_option4').text(row.options[3].name);
+                $('#dt_asnwer1').append(row.options[0].is_correct ? badge_correct : "" );
+                $('#dt_asnwer2').append(row.options[1].is_correct ? badge_correct : "" );
+                $('#dt_asnwer3').append(row.options[2].is_correct ? badge_correct : "" );
+                $('#dt_asnwer4').append(row.options[3].is_correct ? badge_correct : "" );
             
                 $('#dt_is_active').html(isActivehtml(is_active, 'Aktif', 'Non Aktif'));
 
@@ -324,7 +381,7 @@ async function deleteByrow() {
     $("#hideyori_datatable").on("click", ".clickable-delete", async function () {
         if (checkPermission(permissionDelete)) {
             let message = 'pastikan untuk cek kembali data sebelum dihapus';
-            let title = 'Hapus Topic';
+            let title = 'Hapus Soal';
 
             let encodedRowDataString = $(this).attr('data-row');
 
@@ -341,7 +398,7 @@ async function deleteByrow() {
 
                 message = '"' + name + '"';
 
-                const url = app_url + '/misi-pemda/delete/' + id;
+                const url = app_url + '/soal/delete/' + id;
                 await trx_delete(url, checked_id_array, tableDT, title, message, 'div_opsi', selected_one_row, 'id');
             } catch (e) {
                 console.error("Failed to parse JSON string:", e);
@@ -529,12 +586,12 @@ async function resetForm() {
 
         await resetAlertId('alertFormModal');
         idformSubmit[0].reset();
+        $('#topic').val(null).change();
+        $('#jawaban').val(null).change();
         idformSubmit.find('.is-invalid').removeClass('is-invalid')
         idformSubmit.find('.invalid-feedback').empty();
         idformSubmit.find('.xinvalid-feedback').empty();
         await select2form();
-
-
 
     }
 
@@ -555,7 +612,7 @@ async function addForm() {
         $('#is_active').val(1).trigger('change');
 
         formModal._element.addEventListener('shown.bs.modal', function () {
-            $('#nama_misi').focus();
+            $('#soal').focus();
         });
 
 
@@ -584,7 +641,6 @@ async function editByrow() {
                 if (row !== null) {
                     let x = row;
 
-
                     $('#titleFormModal').text('EDIT DATA');
 
                     save_method = 'update';
@@ -597,9 +653,26 @@ async function editByrow() {
                     idformUpdate = x.id;
 
                     if (x.name) {
-                        $("#name").val(x.name);
+                        $("#soal").val(x.name);
                     }
-
+                    if (x.question_type_id) {
+                        $("#tipe_soal").val(x.question_type_id).change();
+                    }
+                    if (x.topics[0]) {
+                        var option = new Option(x.topics[0].name, x.topics[0].id, true, true);
+                        $("#topic").append(option).trigger('change');
+                    }
+                    
+                    let jawaban = [];
+                    x.options.forEach((element, index) => {
+                        $(`#option_${index + 1}`).val(element.name);
+                        if (element.is_correct) {
+                            jawaban.push(index+1);  
+                        }
+                        $(`#option_${index + 1}`).val(element.name);
+                    });
+                    
+                    $(`#jawaban`).val(jawaban).change();
 
                     $("#is_active").val(x.is_active).trigger('change');
                 }
@@ -623,7 +696,6 @@ async function submitForm(event) {
     if (checkanyPermission([permissionCreate, permissionUpdate])) {
         event.preventDefault();
         const formData = new FormData(event.target);
-        let formValues = Object.fromEntries(formData);
 
         await resetAlertId('alertFormModal');
         await processSubmit('submitButton');
@@ -631,14 +703,12 @@ async function submitForm(event) {
             let response_form;
             if (save_method == 'create') {
                 if (checkPermission(permissionCreate)) {
-                    response_form = await axios.post(app_url + '/misi-pemda/store', formValues);
+                    response_form = await axios.post(app_url + '/soal/store', formData);
                 }
             } else {
                 if (checkPermission(permissionUpdate)) {
-                    const formValuesUpdate = Object.assign({}, formValues, {
-                        _method: 'put'
-                    });
-                    response_form = await axios.post(app_url + '/misi-pemda/update/' + idformUpdate, formValuesUpdate);
+                    formData.append('_method', 'PUT')
+                    response_form = await axios.post(app_url + '/soal/update/' + idformUpdate, formData);
                 }
             }
 

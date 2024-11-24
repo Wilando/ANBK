@@ -16,32 +16,11 @@
 
                                 <tbody id="dtRincian">
 
-
-
                                 <tr class="align-middle">
-                                    <td style="width: 30%;">Misi</td>
+                                    <td style="width: 30%;">Nama Topic</td>
                                     <td style="width: 5%;">:</td>
                                     <td style="width: 65%;" id="dt_nama_misi"></td>
                                 </tr>
-
-
-
-
-
-                                <tr class="align-middle">
-                                    <td style="width: 30%;">Deskripsi</td>
-                                    <td style="width: 5%;">:</td>
-                                    <td style="width: 65%;" id="dt_deskripsi"></td>
-                                </tr>
-
-                                <tr class="align-middle">
-                                    <td style="width: 30%;">Periode</td>
-                                    <td style="width: 5%;">:</td>
-                                    <td style="width: 65%;" id="dt_periode"></td>
-                                </tr>
-
-
-
 
                                 <tr class="align-middle">
                                     <td style="width: 30%;">Status</td>
@@ -49,12 +28,6 @@
                                     <td style="width: 65%;" id="dt_is_active"></td>
                                 </tr>
 
-
-                                <tr class="align-middle">
-                                    <td style="width: 30%;">Dibuat Pada</td>
-                                    <td style="width: 5%;">:</td>
-                                    <td style="width: 65%;" id="dt_created"></td>
-                                </tr>
                                 </tbody>
                             </table>
                         </div>

@@ -115,7 +115,9 @@
                                     </th>
 
                                     <th>No.</th>
-                                    <th>Nama Topic</th>
+                                    <th>Soal</th>
+                                    <th>Tipe</th>
+                                    <th>Topic</th>
                                     <th>Status</th>
                                     <th>Aksi</th>
                                 </tr>
@@ -138,19 +140,19 @@
 
 
 @can($permissionRead)
-@include("panel.misi_pemda.modalFilter")
-@include("panel.misi_pemda.modalRincian")
+@include("panel.soal.modalFilter")
+@include("panel.soal.modalRincian")
 @endcan
 
 
 @canany([$permissionCreate, $permissionUpdate])
-@include("panel.misi_pemda.modalForm")
+@include("panel.soal.modalForm")
 @endcanany
 
 
 
 @canany([$permissionUpdate, $permissionValidation])
-@include("panel.misi_pemda.modalBulk")
+@include("panel.soal.modalBulk")
 @endcanany
 
 @endsection
@@ -175,7 +177,7 @@
     src="{{ asset("myjs/select2/init.js") }}?v={{ filemtime(public_path('myjs/select2/init.js')) }}"></script>
 <script
     src="{{ asset("myjs/dataTable/multiple_init.js") }}?v={{ filemtime(public_path('myjs/dataTable/multiple_init.js')) }}"></script>
-<script src="{{ asset("myjs/app/misi_pemda/init.js") }}?v={{ filemtime(public_path('myjs/app/misi_pemda/init.js')) }}"
+<script src="{{ asset("myjs/app/soal/init.js") }}?v={{ filemtime(public_path('myjs/app/soal/init.js')) }}"
     defer></script>
 @endcan
 @endpush
