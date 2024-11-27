@@ -53,15 +53,11 @@ async function load_dt() {
             paging: true,
             processing: true,
             serverSide: true,
-            responsive: {
-                details: {
-                    type: 'column'
-                }
-            },
+            scrollX: true ,
             language: {
                 url: base_url + '/json/dt-id.json',
             },
-            autoWidth: false,
+            autoWidth: true,
             select: {
                 info: false,
                 style: 'multi',
@@ -87,12 +83,6 @@ async function load_dt() {
 
                     width: 1,
                 },
-
-                {responsivePriority: 1, targets: 0},
-                {responsivePriority: 2, targets: 1},
-                {responsivePriority: 3, targets: 2},
-                {responsivePriority: 4, targets: 3},
-
             ],
 
             columns: [{
@@ -125,6 +115,7 @@ async function load_dt() {
                 {
                     data: 'name',
                     name: 'name',
+                    
                 },
                 {
                     data: 'question_type.name',

@@ -504,7 +504,7 @@ class SoalController extends Controller
 
     public function remote(Request $request)
     {
-        $dataRemote = Topic::query();
+        $dataRemote = $this->model::with(["options", "topics", "question_type"]);
 
         $parameter = $request->parameter;
 
@@ -516,14 +516,33 @@ class SoalController extends Controller
 
         $search = $request->search;
         if ($search) {
-            $dataRemote = $dataRemote->where('nama_misi', 'like', '%' . $search . '%');
+            $dataRemote = $dataRemote->where('name', 'like', '%' . $search . '%');
         }
+
+        // Ambil data dan kelompokkan berdasarkan topik
         $dataRemote = $dataRemote
-            ->select('id_misi as id', 'nama_misi as text', 'tahun_awal', 'tahun_akhir')
-            ->orderBy('nama_misi')
+            ->select('id', 'name as text')
+            ->orderBy('name')
             ->limit(100)
             ->get();
 
-        return response()->json($dataRemote);
+        // Kelompokkan data berdasarkan topik
+        $grouped = $dataRemote->groupBy(function($item) {
+            return $item->topics->first()->name ?? 'Other'; // Kelompokkan berdasarkan topik pertama
+        });
+
+        // Format data untuk Select2
+        $formattedData = [];
+        foreach ($grouped as $topic => $items) {
+            $formattedData[] = [
+                'text' => $topic,  // Nama grup/topik
+                'children' => $items->map(function ($item) {
+                    return ['id' => $item->id, 'text' => $item->text];
+                }),
+            ];
+        }
+
+        return response()->json($formattedData);
     }
+
 }

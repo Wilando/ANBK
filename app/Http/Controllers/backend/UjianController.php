@@ -8,6 +8,8 @@ use Harishdurga\LaravelQuiz\Models\Question;
 use Harishdurga\LaravelQuiz\Models\QuestionOption;
 use Harishdurga\LaravelQuiz\Models\Quiz;
 use Harishdurga\LaravelQuiz\Models\QuizAuthor;
+use Harishdurga\LaravelQuiz\Models\QuizQuestion;
+
 use App\Models\User;
 use App\Services\hideyoriService;
 
@@ -64,12 +66,13 @@ class UjianController extends Controller
         $active = $request->get('is_active');
         $topic = $request->get('topic');
         
-        $data = $this->model::with(["quizAuthors.author", "topics"])
+        $data = $this->model::with(["quizAuthors.author", "topics" , "questions.question"])
         ->whereHas('topics', function ($query) use ($topic) {
             if ($topic != '') {
                 $query->where('topic_id', $topic);
             }
-        });
+        })
+        ->orderBy('updated_at', 'desc');
 
         $data = $data->where(function ($query) use ($mulai, $selesai, $active) {
             if ($mulai && $selesai) {
@@ -95,11 +98,20 @@ class UjianController extends Controller
             ->toJson();
     }
 
-    private function _insert($reqData, $id_topic)
+    private function _insert($reqData, $id_topic, $list_soal)
     {
         $processData = $this->model::create($reqData);
 
         $processData->topics()->attach([$id_topic]);
+
+        foreach ($list_soal as $index => $soal) {
+            QuizQuestion::create([
+                'quiz_id' => $processData->id,
+                'question_id' => $soal,
+                'order' => $index + 1,
+            ]);
+        }
+
         QuizAuthor::create([
             'quiz_id' => $processData->id,
             'author_id' => auth()->user()->id,
@@ -134,6 +146,7 @@ class UjianController extends Controller
             'topic' => 'required',
             'mulai' => 'required',
             'selesai' => 'required',
+            'jumlah' => 'required',
         ];
 
         $attribute_rule = [];
@@ -155,7 +168,15 @@ class UjianController extends Controller
             ]
         ];
         
-        $res = $this->myService->trx_db($this->_insert( $reqData, $request->input('topic') ));
+        $list_soal = [];
+
+        $i = 1;
+        while ($request->has('soal_' . $i)) {
+            $list_soal[] = $request->input('soal_' . $i);
+            $i++;
+        }
+
+        $res = $this->myService->trx_db($this->_insert( $reqData, $request->input('topic'), $list_soal ));
 
         if ($request->wantsJson()) {
             return response()->json($res, Response::HTTP_CREATED);
@@ -176,19 +197,19 @@ class UjianController extends Controller
     }
 
 
-    private function _update($master, $reqData, $id_topic, $questionOption, $is_correct)
+    private function _update($master, $reqData, $id_topic, $list_soal)
     {
 
         $oldAttributes = $master->getOriginal();
         $master->topics()->sync([$id_topic]);
-        $option_sebelum = $master->options;
+        $master->questions()->delete();
         
-        foreach ($option_sebelum as $index => $option) {
-            $option->update([
-                'question_id' => $master->id,
-                'name' => $questionOption[$index],
-                'is_correct' => in_array($index + 1, $is_correct) ? true : false
-            ]); 
+        foreach ($list_soal as $index => $soal) {
+            QuizQuestion::create([
+                'quiz_id' => $master->id,
+                'question_id' => $soal,
+                'order' => $index + 1,
+            ]);
         }
         $processData = $master->update($reqData);
 
@@ -222,21 +243,12 @@ class UjianController extends Controller
         $master = $this->model::findOrfail(decodeId($id));
         $masterview = $this->model::query()->where('id', $id)->first();
         $rule = [
-            'soal' => 'required',
-            'tipe_soal' => 'required',
+            'nama_ujian' => 'required',
             'topic' => 'required',
-            'option_1' => 'required',
-            'option_2' => 'required',
-            'option_3' => 'required',
-            'option_4' => 'required',
-            'jawaban' => 'required|array|min:1',
+            'mulai' => 'required',
+            'selesai' => 'required',
+            'jumlah' => 'required',
         ];
-
-
-        if (xhasPermission($this->permissionValidation)) {
-            $rule[$this->columnValidation] = 'required';
-        }
-
 
         $attribute_rule = [];
 
@@ -247,27 +259,26 @@ class UjianController extends Controller
 
 
         $reqData = [
-            'name' => $request->input('soal'),
-            'question_type_id' => $request->input('tipe_soal')
+            'name' => $request->input('nama_ujian'),
+            'valid_from' => $request->input('mulai'),
+            'valid_upto' => $request->input('selesai'),
+            'negative_marking_settings'=>[
+                'enable_negative_marks' => false,
+                'negative_marking_type' => 'fixed',
+                'negative_mark_value' => 0,
+            ]
         ];
-        $questionOption = [
-            $request->input('option_1')
-            ,$request->input('option_2')
-            ,$request->input('option_3')
-            ,$request->input('option_4'),
-        ];
 
 
-        $reqData['is_active'] = $master->is_active;
+        $list_soal = [];
 
-
-        if (xhasPermission($this->permissionValidation)) {
-            $is_active = $request->input('is_active');
-
-            $reqData['is_active'] = $is_active;
+        $i = 1;
+        while ($request->has('soal_' . $i)) {
+            $list_soal[] = $request->input('soal_' . $i);
+            $i++;
         }
 
-        $res = $this->myService->trx_db($this->_update($master, $reqData, $request->input('topic'), $questionOption, $request->input('jawaban')));
+        $res = $this->myService->trx_db($this->_update($master,$reqData, $request->input('topic'), $list_soal));
 
 
         if ($request->wantsJson()) {
@@ -281,7 +292,7 @@ class UjianController extends Controller
     {
 
         $oldAttributes = $master->getOriginal();
-        $master->options()->delete();
+        $master->questions()->delete();
         $deleted = $master->delete();
         if ($deleted) {
             $properties['old'] = $oldAttributes;
@@ -512,5 +523,41 @@ class UjianController extends Controller
             ->get();
 
         return response()->json($dataRemote);
+    }
+
+    public function listSoal($id)
+    {   
+        $master = $this->model::with(['questions.question.options', "questions.question.topics"])
+        ->findOrFail(decodeId($id));
+
+        $groupedQuestions = $master->questions->groupBy(function ($questionWrapper) {
+            // Ambil nama topik pertama dari koleksi topik
+            return $questionWrapper->question->topics->pluck('name')->first() ?? 'Tanpa Topik';
+        });
+
+        $groupedQuestionsArray = $groupedQuestions->map(function ($questions, $topicName) {
+            return [
+                'topic' => $topicName,
+                'questions' => $questions->map(function ($questionWrapper) {
+                    $question = $questionWrapper->question;
+                    return [
+                        'question' => $question->name,
+                        'options' => $question->options->map(function ($option) {
+                            return [
+                                'name' => $option->name,
+                                'is_correct' => $option->is_correct,
+                            ];
+                        }),
+                    ];
+                }),
+            ];
+        })->values()->toArray();
+
+        // $data = $this->model::with(["options", "topics", "question_type"])->get();
+        // $questionsGroupedByTopic = $data->groupBy(function ($question) {
+        //     return $question->topics->pluck('name')->join(', '); // Mengelompokkan berdasarkan nama topik
+        // });
+
+        return response()->json($groupedQuestionsArray);
     }
 }

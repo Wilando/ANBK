@@ -1,5 +1,5 @@
 <form id="formSubmit" enctype="multipart/form-data" method="post">
-    <div class="modal modal-blur fade" data-bs-backdrop="static" data-bs-keyboard="false" id="formModal" tabindex="-1"
+    <div class="modal modal-blur fade modal-xl" data-bs-backdrop="static" data-bs-keyboard="false" id="formModal" tabindex="-1"
         role="dialog" aria-labelledby="formModal" aria-hidden="true">
         <!-- <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-fullscreen" role="document"> -->
         <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
@@ -25,8 +25,6 @@
                         </div>
 
                         <div class="col-12">
-
-
 
                             <div class="row g-1 align-items-center">
 
@@ -55,7 +53,14 @@
                                         <label for="selesai">Selesai</label>
                                     </div>
                                 </div>
+                                <div class="col-lg-12 col-12 mb-2">
+                                    <label for="jumlah" class="form-label">Jumlah Soal</label>
+                                    <input type="number" class="form-control form-control-sm" name="jumlah" id="jumlah" rows="1"></input>
+                                    <div class="invalid-feedback" id="feedback_error_jumlah"></div>
+                                </div>
+                                <div class="col-lg-12 col-12 mb-2" id="input-soal-container">
 
+                                </div>
                             </div>
 
 

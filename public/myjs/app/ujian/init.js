@@ -1,9 +1,9 @@
-const permissionCreate = 'soal create';
-const permissionRead = 'soal read';
-const permissionUpdate = 'soal update';
-const permissionDelete = 'soal delete';
-const permissionValidation = 'soal validation';
-const permissionPrivilege = 'soal privilege';
+const permissionCreate = 'ujian create';
+const permissionRead = 'ujian read';
+const permissionUpdate = 'ujian update';
+const permissionDelete = 'ujian delete';
+const permissionValidation = 'ujian validation';
+const permissionPrivilege = 'ujian privilege';
 let tableDT = null;
 let checked_id_array = [];
 let selected_one_row = [];
@@ -22,7 +22,6 @@ async function initLoad() {
     await initModal();
     await resetformFilter();
     await load_dt();
-
 
 }
 
@@ -242,8 +241,7 @@ async function initModal() {
         }
 
         rincianModal = new bootstrap.Modal(document.getElementById('rincianModal'));
-
-
+        
     }
 
     if (checkanyPermission([permissionUpdate, permissionValidation])) {
@@ -266,55 +264,132 @@ async function initModal() {
                 multiple: select
             });
         });
+
+        // Ketika nilai jumlah soal berubah
+        $('#jumlah').on('change', function () {
+            // Ambil nilai jumlah soal yang dipilih
+            var jumlahSoal = $(this).val();
+
+            // Kosongkan container input soal
+            $('#input-soal-container').empty();
+
+            // Jika jumlah soal lebih besar dari 0, tambahkan input
+            if (jumlahSoal > 0) {
+                for (var i = 1; i <= jumlahSoal; i++) {
+                    // Buat grup input untuk soal menggunakan grid
+                    var inputGroup = $('<div class="row mb-3"></div>');  // Membuat baris
+        
+                    // Tambahkan kolom untuk label
+                    var labelCol = $('<div class="col-md-auto"></div>');
+                    labelCol.append('<label class="form-label">Soal ' + i + ':</label>');
+                    inputGroup.append(labelCol);
+        
+                    // Buat kolom untuk select2
+                    var selectCol = $('<div class="col-md-10"></div>');  // Membuat kolom yang lebih besar
+                    var select = $('<select class="form-control soal_select2" style="width: 100%" name="soal_' + i + '" required></select>');
+                    selectCol.append(select);
+        
+                    inputGroup.append(selectCol);
+        
+                    // Tambahkan input group ke container
+                    $('#input-soal-container').append(inputGroup);
+                  }
+
+                // Inisialisasi soal_Select2 pada setiap elemen select yang baru dibuat
+                $('.soal_select2').select2({
+                    placeholder: "Pilih Soal",
+                    allowClear: true,
+                    dropdownParent: $('#formModal'),
+                    ajax: {
+                        url: app_url + '/soal/remote',
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) {
+                            return {
+                                search: params.term,
+                            };
+                        },
+                        processResults: function (data) {
+                            return {
+                                results: data
+                            };
+                        }
+                    },
+                    templateResult: function (data) {
+                        if (data.children) {
+                            return $('<span>' + data.text + '</span>');
+                        }
+                        return data.text;
+                    },
+                    templateSelection: function (data) {
+                        return data.text; 
+                    }
+            });
+            }
+        });
+
     }
-
-
-
 }
+
 
 async function detailByrow() {
     $("#hideyori_datatable").on("click", ".clickable-detail", async function () {
         if (checkPermission(permissionRead)) {
             let encodedRowDataString = $(this).attr('data-row');
             let rowDataString = decodeURIComponent(encodedRowDataString);
-            $('#dt_asnwer1').html("Option 1");
-            $('#dt_asnwer2').html("Option 2");
-            $('#dt_asnwer3').html("Option 3");
-            $('#dt_asnwer4').html("Option 4");
 
             try {
                 let row = JSON.parse(rowDataString);
 
                 let id = row.id ?? '';
+                let list_soal = await axios.get(app_url + '/ujian/list-soal/' + id);
+                const container = $("#tabelPertanyaan");
 
-                let name = row.name ?? '';
-                let tipe = '';
-                if (row.question_type.name == "multiple_choice_single_answer") {
-                    tipe = "Pilihan Ganda (Satu Jawaban)";
-                }
-                else if (row.question_type.name == "multiple_choice_multiple_answer"){
-                    tipe = "Pilihan Ganda (Lebih Dari Satu Jawaban)"
-                }
-                let topics = "";
-                row.topics.forEach(element => {
-                    topics += element.name;
+                container.empty();
+
+                list_soal.data.forEach(topicGroup => {
+                    const table = $(`
+                      <table class="table table-bordered table-hover mt-4">
+                        <thead>
+                          <tr>
+                            <th colspan="2" style="text-align: center;">${topicGroup.topic}</th>
+                          </tr>
+                          <tr>
+                            <th style="text-align: center; width: 50%;">Pertanyaan</th>
+                            <th style="text-align: center; width: 50%;">Opsi</th>
+                          </tr>
+                        </thead>
+                        <tbody></tbody>
+                      </table>
+                    `);
+                
+                    topicGroup.questions.forEach(question => {
+                      question.options.forEach((option, optionIndex) => {
+                        const row = $("<tr></tr>");
+                
+                        // Tambahkan kolom untuk pertanyaan hanya di baris pertama setiap opsi
+                        if (optionIndex === 0) {
+                          const questionCell = $(`
+                            <td rowspan="${question.options.length}">
+                              ${question.question}
+                            </td>
+                          `);
+                          row.append(questionCell);
+                        }
+                
+                        // Tambahkan kolom opsi dengan format "Opsi (Benar/Salah)"
+                        const optionCell = $(`
+                          <td>${option.name} (${option.is_correct ? "Benar" : "Salah"})</td>
+                        `);
+                        row.append(optionCell);
+                
+                        table.find("tbody").append(row);
+                      });
+                    });
+                
+                    // Tambahkan tabel ke dalam container
+                    container.append(table);
                 });
-                let badge_correct = ` <span class="badge text-bg-success">Benar</span>`;
-
-                let is_active = row.is_active ?? '';
-                $('#dt_soal').text(name);
-                $('#dt_tipe').text(tipe);
-                $('#dt_topic').text(topics);
-                $('#dt_option1').text(row.options[0].name);
-                $('#dt_option2').text(row.options[1].name);
-                $('#dt_option3').text(row.options[2].name);
-                $('#dt_option4').text(row.options[3].name);
-                $('#dt_asnwer1').append(row.options[0].is_correct ? badge_correct : "" );
-                $('#dt_asnwer2').append(row.options[1].is_correct ? badge_correct : "" );
-                $('#dt_asnwer3').append(row.options[2].is_correct ? badge_correct : "" );
-                $('#dt_asnwer4').append(row.options[3].is_correct ? badge_correct : "" );
-            
-                $('#dt_is_active').html(isActivehtml(is_active, 'Aktif', 'Non Aktif'));
 
                 rincianModal.show();
                 await refreshFsLightbox();
@@ -387,7 +462,7 @@ async function deleteByrow() {
 
                 message = '"' + name + '"';
 
-                const url = app_url + '/soal/delete/' + id;
+                const url = app_url + '/ujian/delete/' + id;
                 await trx_delete(url, checked_id_array, tableDT, title, message, 'div_opsi', selected_one_row, 'id');
             } catch (e) {
                 console.error("Failed to parse JSON string:", e);
@@ -596,7 +671,7 @@ async function addForm() {
         await resetForm();
         $('#titleFormModal').text('TAMBAH DATA');
         formModal.show();
-
+        $('#input-soal-container').empty();
         $('#submitText').text('Simpan');
         save_method = 'create';
         $("#formSubmit :input").prop("disabled", false);
@@ -629,7 +704,7 @@ async function editByrow() {
 
                 await resetForm();
 
-
+                $('#input-soal-container').empty();
                 if (row !== null) {
                     let x = row;
 
@@ -645,7 +720,7 @@ async function editByrow() {
                     idformUpdate = x.id;
 
                     if (x.name) {
-                        $("#soal").val(x.name);
+                        $("#nama_ujian").val(x.name);
                     }
                     if (x.question_type_id) {
                         $("#tipe_soal").val(x.question_type_id).change();
@@ -654,19 +729,20 @@ async function editByrow() {
                         var option = new Option(x.topics[0].name, x.topics[0].id, true, true);
                         $("#topic").append(option).trigger('change');
                     }
+                    if (x.valid_from) {
+                        $("#mulai").val(x.valid_from).change();
+                    }
+                    if (x.valid_upto) {
+                        $("#selesai").val(x.valid_upto).change();
+                    }
                     
-                    let jawaban = [];
-                    x.options.forEach((element, index) => {
-                        $(`#option_${index + 1}`).val(element.name);
-                        if (element.is_correct) {
-                            jawaban.push(index+1);  
-                        }
-                        $(`#option_${index + 1}`).val(element.name);
+                    $("#jumlah").val(x.questions.length).change();
+
+                    x.questions.forEach((element, index) => {
+                        var option = new Option(element.question.name, element.question_id, true, true);
+                        $(`[name="soal_${element.order}"]`).append(option).trigger('change');
                     });
                     
-                    $(`#jawaban`).val(jawaban).change();
-
-                    $("#is_active").val(x.is_active).trigger('change');
                 }
 
 

@@ -183,6 +183,7 @@ Route::group(['prefix' => 'app', 'middleware' => ['web', 'auth']], function () {
             Route::put('bulk-update', [\App\Http\Controllers\backend\UjianController::class, 'bulkUpdate']);
             Route::get('select-data', [\App\Http\Controllers\backend\UjianController::class, 'selectData']);
             Route::get('remote', [\App\Http\Controllers\backend\UjianController::class, 'remote']);
+            Route::get('list-soal/{id}', [\App\Http\Controllers\backend\UjianController::class, 'listSoal']);
         });
     });
 });
