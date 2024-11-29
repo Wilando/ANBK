@@ -445,7 +445,7 @@ async function deleteByrow() {
     $("#hideyori_datatable").on("click", ".clickable-delete", async function () {
         if (checkPermission(permissionDelete)) {
             let message = 'pastikan untuk cek kembali data sebelum dihapus';
-            let title = 'Hapus Soal';
+            let title = 'Hapus Ujian';
 
             let encodedRowDataString = $(this).attr('data-row');
 
@@ -480,8 +480,8 @@ async function _delete() {
 
         if (jumlah_checked > 0) {
 
-            const url = app_url + '/misi-pemda/bulk-delete';
-            await trx_bulk_delete(url, checked_id_array, tableDT, message, 'div_opsi', selected_one_row, 'id_misi');
+            const url = app_url + '/ujian/bulk-delete';
+            await trx_bulk_delete(url, checked_id_array, tableDT, message, 'div_opsi', selected_one_row, 'id');
 
         }
     }

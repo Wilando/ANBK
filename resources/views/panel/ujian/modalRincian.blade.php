@@ -9,7 +9,7 @@
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl" role="document">
         <div class="modal-content" style="min-height:300px">
             <div class="modal-header myDarkcss" data-bs-theme="dark">
-                <h5 class="modal-title text-white text-center" id="staticBackdropLabel">Input Soal</h5>
+                <h5 class="modal-title text-white text-center" id="staticBackdropLabel">List Soal</h5>
                 <button type="button" class="btn-close bg-white btn-close bg-white-white" data-bs-dismiss="modal"
                         aria-label="Close"></button>
             </div>
