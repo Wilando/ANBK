@@ -636,4 +636,15 @@ class UjianController extends Controller
         return response()->json($res, Response::HTTP_CREATED);
         
     }
+
+    public
+    function renderJawaban($id)
+    {
+        $master = QuizAttempt::findOrFail(decodeId($id))->validate();
+
+        $res['message'] = $this->titleData . ' berhasil didapatkan';
+        $res['success'] = true;
+        $res['data'] = $master;
+        return response()->json($res, Response::HTTP_OK);
+    }
 }
