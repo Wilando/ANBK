@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Facades\Image;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Yajra\DataTables\Facades\DataTables;
 
 class UjianController extends Controller
@@ -559,5 +560,39 @@ class UjianController extends Controller
         // });
 
         return response()->json($groupedQuestionsArray);
+    }
+
+    public function listUjian($filter){
+        $master = $this->model::with("topics");
+
+        if ($filter == "sekarang") {
+            $master = $master->$master->where('valid_upto', '>=', now())->get();;
+        }
+        else if ($filter == "lewat") {
+            $master = $master->where('valid_upto', '<', now())->get();
+        }
+        else {
+            $master = [];
+        }
+
+        $response = new StreamedResponse(function () use ($master) {
+            while (true) {
+                // Your server-side logic to get data
+                $data = json_encode($master);
+                echo "data: $data\n\n";
+                // Flush the output buffer
+                ob_flush();
+                flush();
+
+                // Delay for 1 second
+                sleep(1);
+            }
+        });
+
+        $response->headers->set('Content-Type', 'text/event-stream');
+        $response->headers->set('Cache-Control', 'no-cache');
+        $response->headers->set('Connection', 'keep-alive');
+
+        return $response;
     }
 }
