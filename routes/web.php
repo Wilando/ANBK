@@ -58,6 +58,11 @@ Route::group(['prefix' => 'app', 'middleware' => ['web', 'auth']], function () {
     Route::get('logout', [App\Http\Controllers\backend\ProfileController::class, 'logout'])->name('logout'); //agar logout bisa tanpa user active
     Route::middleware(['checkActiveUser'])->group(function () {
         Route::get('/', [\App\Http\Controllers\view\IndexController::class, 'index']);
+        Route::get('bank-soal', [\App\Http\Controllers\view\IndexController::class, 'banksoal']);
+        Route::get('soal-lm', [\App\Http\Controllers\view\IndexController::class, 'soallm']);
+        Route::get('literasi-numerik', [\App\Http\Controllers\view\IndexController::class, 'literasinumerik']);
+        Route::get('survey-karakter', [\App\Http\Controllers\view\IndexController::class, 'surveykarakter']);
+        Route::get('lingkungan-sekitar', [\App\Http\Controllers\view\IndexController::class, 'lingkungansekitar']);
         Route::get('data-dashboard', [\App\Http\Controllers\backend\IndexController::class, 'getDashboard']);
         Route::get('datatable-notif', [\App\Http\Controllers\backend\IndexController::class, 'datatable_notif']);
 
