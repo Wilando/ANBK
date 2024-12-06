@@ -9,6 +9,9 @@ use Harishdurga\LaravelQuiz\Models\QuestionOption;
 use Harishdurga\LaravelQuiz\Models\Quiz;
 use Harishdurga\LaravelQuiz\Models\QuizAuthor;
 use Harishdurga\LaravelQuiz\Models\QuizQuestion;
+use Harishdurga\LaravelQuiz\Models\QuizAttempt;
+use Harishdurga\LaravelQuiz\Models\QuizAttemptAnswer;
+
 
 use App\Models\User;
 use App\Services\hideyoriService;
@@ -21,6 +24,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Facades\Image;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Yajra\DataTables\Facades\DataTables;
 
 class UjianController extends Controller
@@ -183,17 +187,6 @@ class UjianController extends Controller
         } else {
             return redirect($this->defaultRedirect)->with($res);
         }
-    }
-
-    public
-    function show($id)
-    {
-
-        $listData = $this->model::query()->where('id', decodeId($id))->first();
-        $res['message'] = $this->titleData . ' berhasil didapatkan';
-        $res['success'] = true;
-        $res['data'] = $listData;
-        return response()->json($res, Response::HTTP_OK);
     }
 
 
@@ -559,5 +552,99 @@ class UjianController extends Controller
         // });
 
         return response()->json($groupedQuestionsArray);
+    }
+
+    public function listUjian($filter){
+        $master = $this->model::with("topics");
+
+        if ($filter == "sekarang") {
+            $master = $master->$master->where('valid_upto', '>=', now())->get();;
+        }
+        else if ($filter == "lewat") {
+            $master = $master->where('valid_upto', '<', now())->get();
+        }
+        else {
+            $master = [];
+        }
+
+        $response = new StreamedResponse(function () use ($master) {
+            while (true) {
+                // Your server-side logic to get data
+                $data = json_encode($master);
+                echo "data: $data\n\n";
+                // Flush the output buffer
+                ob_flush();
+                flush();
+
+                // Delay for 1 second
+                sleep(1);
+            }
+        });
+
+        $response->headers->set('Content-Type', 'text/event-stream');
+        $response->headers->set('Cache-Control', 'no-cache');
+        $response->headers->set('Connection', 'keep-alive');
+
+        return $response;
+    }
+
+    public
+    function show($id)
+    {
+        $master = $this->model::with(['questions.question.options', "questions.question.topics"])
+        ->findOrFail(decodeId($id));
+        $res['message'] = $this->titleData . ' berhasil didapatkan';
+        $res['success'] = true;
+        $res['data'] = $master;
+        return response()->json($res, Response::HTTP_OK);
+    }
+
+    public function inputJawaban(Request $request)
+    {
+        $rule = [
+            'jawaban' => 'required',
+            'id_quiz' => 'required',
+        ];
+
+        $attribute_rule = [];
+
+        $validator = Validator::make($request->all(), $rule, [], $attribute_rule);
+        if ($validator->fails()) {
+            return resValidator($validator);
+        }
+
+        
+        $quiz_attempt = QuizAttempt::create([
+            'quiz_id' => $request->input('id_quiz'),
+            'participant_id' => auth()->user()->id,
+            'participant_type' => get_class(auth()->user())
+        ]);
+
+        foreach ($request->input('jawaban') as $jawaban) {
+            QuizAttemptAnswer::create(
+                [
+                    'quiz_attempt_id' => $quiz_attempt->id,
+                    'quiz_question_id' => $jawaban["id_pertanyaan"],
+                    'question_option_id' => $jawaban["id_jawaban"],
+                ]
+            );
+        }
+        
+        $res['message'] = "ujian berhasil dikerjakan";
+        $res['success'] = true;
+        $res['data'] = $quiz_attempt;
+        return response()->json($res, Response::HTTP_CREATED);
+        
+    }
+
+    public
+    function renderJawaban($id)
+    {
+        $master = QuizAttempt::findOrFail(decodeId($id))->validate();
+
+        $res['message'] = $this->titleData . ' berhasil didapatkan';
+        $res['success'] = true;
+        $res['data'] = $master;
+        return response()->json($res, Response::HTTP_OK);
     }
 }
