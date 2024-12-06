@@ -555,21 +555,23 @@ class UjianController extends Controller
     }
 
     public function listUjian($filter){
-        $master = $this->model::with("topics");
-
-        if ($filter == "sekarang") {
-            $master = $master->$master->where('valid_upto', '>=', now())->get();;
-        }
-        else if ($filter == "lewat") {
-            $master = $master->where('valid_upto', '<', now())->get();
-        }
-        else {
-            $master = [];
-        }
-
-        $response = new StreamedResponse(function () use ($master) {
+        
+        $response = new StreamedResponse(function () use ($filter) {
             while (true) {
                 // Your server-side logic to get data
+                $master = $this->model::with(["topics", "attempts" => function ($query) {
+                    $query->where('participant_id', auth()->user()->id);
+                }]);
+
+                if ($filter == "sekarang") {
+                    $master = $master->where('valid_upto', '>=', now())->get();;
+                }
+                else if ($filter == "lewat") {
+                    $master = $master->where('valid_upto', '<', now())->get();
+                }
+                else {
+                    $master = [];
+                }
                 $data = json_encode($master);
                 echo "data: $data\n\n";
                 // Flush the output buffer
@@ -577,7 +579,7 @@ class UjianController extends Controller
                 flush();
 
                 // Delay for 1 second
-                sleep(1);
+                sleep(10);
             }
         });
 
@@ -591,7 +593,15 @@ class UjianController extends Controller
     public
     function show($id)
     {
-        $master = $this->model::with(['questions.question.options', "questions.question.topics"])
+        $master = $this->model::with(
+            ['questions.question.options', 
+            "questions.question.topics", 
+            "topics",
+            "attempts" => function ($query) {
+                $query->where('participant_id', auth()->user()->id);
+            }
+            ]
+        )
         ->findOrFail(decodeId($id));
         $res['message'] = $this->titleData . ' berhasil didapatkan';
         $res['success'] = true;

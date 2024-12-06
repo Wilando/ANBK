@@ -1,128 +1,95 @@
-@extends("layouts.master-layouts")
-@section("title", ucwords($titlePage))
+@extends('layouts.master-layouts')
+@section('title', ucwords($titlePage))
 
-@push("meta")
-@include("layouts.default_og")
+@push('meta')
+    @include('layouts.default_og')
 @endpush
-
-@push("css")
-<style>
- /* Background keseluruhan body */
-body {
-    background-color: #E6F7FE; /* Warna latar belakang */
-}
-
-.page-title-box {
-    background-color: #E6F7FE;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    font-size: 24px;
-}
-
-/* Wrapper untuk Kotak Bank Soal dan Pilihan Lainnya */
-.big-box-wrapper {
-    background-color: #fff;
-    padding: 40px;
-    border-radius: 10px;
-    box-shadow: -14px 7px 4px rgba(0, 0, 0, 0.1), 0 0 0 0.5px rgba(0, 0, 0, 0.3);
-    margin-top: 40px;
-    display: flex;
-    flex-direction: column; /* Kotak Bank Soal dan Pilihan lainnya dalam kolom */
-    align-items: center; /* Menjaga kotak tetap terpusat */
-    gap: 30px; /* Menjaga jarak antar kotak */
-}
-
-/* Kotak Bank Soal */
-.option-box-main {
-    background-color: #4FB3F6;
-    padding: 15px; /* Tambahkan padding untuk memberi ruang lebih */
-    border-radius: 5px;
-    text-align: center;
-   
-    color: white;
-    cursor: pointer;
-    width: 340px;  /* Lebar kotak Bank Soal sesuai ukuran Figma */
-    height: 130px; /* Tinggi kotak sesuai dengan ukuran yang lebih pas */
-    transition: all 0.3s ease;
-    display: flex;  /* Gunakan Flexbox untuk mengatur posisi ikon dan teks */
-    flex-direction: column;
-    justify-content: center; /* Menyusun ikon dan teks ke tengah secara vertikal */
-    align-items: center; /* Menyusun ikon dan teks ke tengah secara horizontal */
-}
-
-.option-box-main:hover {
-    background-color: #0056b3;
-}
-
-.option-box-main i {
-    font-size: 40px; /* Ukuran ikon lebih kecil untuk proporsi yang seimbang */
-    margin-bottom: 10px; /* Jarak antara ikon dan teks */
-}
-
-.option-box-main p {
-    font-size: 22px; /* Ukuran font disesuaikan agar lebih rapi */
-    font-weight: bold;
-    margin: 0; /* Hapus margin default agar lebih presisi */
-}
-
-
-/* Kotak pilihan lainnya */
-.option-box {
-    background-color: #007bff;
-    padding: 25px 15px; /* Padding untuk memperpanjang kotak */
-    border-radius: 10px;
-    text-align: center;
-   
-    color: white;
-    width: 100%;
-    max-width: 280px; /* Lebar kotak lebih kecil untuk seimbang */
-    height: 130px; /* Menambah tinggi kotak secara vertikal */
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.option-box:hover {
-    background-color: #0056b3;
-}
-
-.option-box i {
-    font-size: 35px; /* Ukuran ikon disesuaikan untuk tampilan lebih seimbang */
-    margin-bottom: 10px;
-}
-
-.option-box p {
-    font-size: 18px; /* Ukuran font disesuaikan dengan ukuran kotak */
-    font-weight: bold;
-}
-
-
-
-</style>
+@push('css')
 @endpush
+@section('content')
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-flex align-items-center justify-content-between">
+                <h4 class="mb-0"> {!! $iconPage !!} {{ ucwords($titlePage) }}</h4>
+            </div>
+        </div>
+    </div>
 
-@section("content")
-
-<!-- Wrapper besar untuk Bank Soal dan kotak pilihan lainnya -->
-<div class="big-box-wrapper">
-    <!-- Bank Soal -->
-    <a href="/app/bank-soal" class="option-box-main">
-        <i class="fas fa-book"></i>
-        <p>Bank Soal</p>
-    </a>
-</div>
-
-
+    <div class="row g-3">
+        <div class="col-md-6 col-xl-4">
+            <a href="/app/bank-soal" class="text-decoration-none">
+                <div class="card">
+                    <img class="card-img-top img-fluid equal-height" src="{{ URL::asset('assets/images/small/soal.jpg') }}"
+                        alt="Card image cap" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h4 class="card-title">Bank Soal</h4>
+                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
+                            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                            ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-xl-4">
+            <a href="/app/list-ujian-siswa" class="text-decoration-none">
+                <div class="card">
+                    <img class="card-img-top img-fluid equal-height" src="{{ URL::asset('assets/images/small/exam.jpg') }}"
+                        alt="Card image cap" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h4 class="card-title">Ujian</h4>
+                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
+                            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                            ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
 
 @endsection
 
-@push("scripts")
-<script src="{{ asset("myjs/hideyorivannilaJs/env.js") }}?v={{ filemtime(public_path('myjs/hideyorivannilaJs/env.js')) }}" defer></script>
-<script src="{{ asset("myjs/app/my-user/init.js") }}?v={{ filemtime(public_path('myjs/app/my-user/init.js')) }}" defer></script>
-<script src="{{ asset("myjs/hideyorivannilaJs/helper.js") }}?v={{ filemtime(public_path('myjs/hideyorivannilaJs/helper.js')) }}" defer></script>
+@push('scripts')
+    <script
+        src="{{ asset('myjs/hideyorivannilaJs/env.js') }}?v={{ filemtime(public_path('myjs/hideyorivannilaJs/env.js')) }}"
+        defer></script>
+    <script src="{{ asset('myjs/app/my-user/init.js') }}?v={{ filemtime(public_path('myjs/app/my-user/init.js')) }}" defer>
+    </script>
+    <script
+        src="{{ asset('myjs/hideyorivannilaJs/helper.js') }}?v={{ filemtime(public_path('myjs/hideyorivannilaJs/helper.js')) }}"
+        defer></script>
+    <script src="{{ asset('myjs/select2/init.js') }}?v={{ filemtime(public_path('myjs/select2/init.js')) }}"></script>
+    <script
+        src="{{ asset('myjs/dataTable/multiple_init.js') }}?v={{ filemtime(public_path('myjs/dataTable/multiple_init.js')) }}">
+    </script>
+    <script src="{{ asset('myjs/app/dashboard/init.js') }}?v={{ filemtime(public_path('myjs/app/dashboard/init.js')) }}">
+    </script>
+    <script>
+        document.getElementById('statusFilter').addEventListener('change', function() {
+            var filterValue = this.value; // Mendapatkan nilai filter (upcoming, past, all)
+            var cards = document.querySelectorAll('.card-item'); // Menemukan semua kartu ujian
+            var today = new Date().toISOString().split('T')[
+                0]; // Mendapatkan tanggal hari ini dalam format YYYY-MM-DD
 
-<script src="{{ asset("myjs/select2/init.js") }}?v={{ filemtime(public_path('myjs/select2/init.js')) }}"></script>
-<script src="{{ asset("myjs/dataTable/multiple_init.js") }}?v={{ filemtime(public_path('myjs/dataTable/multiple_init.js')) }}"></script>
+            cards.forEach(function(card) {
+                var cardDate = card.getAttribute(
+                    'data-ujian-date'); // Mendapatkan tanggal ujian dari atribut data-ujian-date
 
-<script src="{{ asset("myjs/app/dashboard/init.js") }}?v={{ filemtime(public_path('myjs/app/dashboard/init.js')) }}"></script>
+                // Menghitung status ujian berdasarkan perbandingan tanggal ujian dengan tanggal hari ini
+                var cardDateObj = new Date(cardDate); // Mengubah string tanggal menjadi objek Date
+                var isPast = cardDateObj < new Date(today); // Cek apakah tanggal ujian sudah lewat
+
+                if (filterValue === 'all') {
+                    card.style.display =
+                        'block'; // Menampilkan semua kartu jika filter 'Semua Ujian' dipilih
+                } else if (filterValue === 'upcoming' && !isPast) {
+                    card.style.display = 'block'; // Menampilkan kartu yang waktunya belum lewat
+                } else if (filterValue === 'past' && isPast) {
+                    card.style.display = 'block'; // Menampilkan kartu yang sudah lewat
+                } else {
+                    card.style.display = 'none'; // Menyembunyikan kartu yang tidak sesuai dengan filter
+                }
+            });
+        });
+    </script>
 @endpush
+
