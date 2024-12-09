@@ -31,36 +31,45 @@ function startSSE(url) {
         if (!areArraysIdentical(dataSekarang, jsonObj)) {
             dataSekarang = jsonObj;
             $("#ujian-cards").empty();
-            jsonObj.forEach((ujian) => {
-                let status = getUjianStatus(ujian.valid_upto);
-                let sudah_dikerjakan = ujian.attempts.length > 0 ? true : false;
-                let buttonHtml =
-                    status === "sekarang"
-                        ? 
-                        `<a href="/app/ujian-siswa/${ujian.id}" class="btn ${sudah_dikerjakan ? "btn-success" : "btn-primary"} waves-effect waves-light btn-kerjakan">
-                            ${sudah_dikerjakan ? "Sudah Dikerjakan" : "Kerjakan"}
-                        </a>`
-                        : `<a href="/app/ujian-siswa/${ujian.id}" class="btn btn-secondary waves-effect waves-light btn-detail">Detail</a>`;
-                $("#ujian-cards").append(`
-                    <div class="col-md-4 card-item">
-                        <div class="card">
-                            <div class="card-body d-flex flex-column text-center">
-                                <h4 class="card-title">
-                                ${ujian.name}
-                                </h4>
-                                <p class="card-text">${ujian.topics[0].name}</p>
-                            </div>
-                            <ul class="list-group list-group-flush text-center">
-                            <li class="list-group-item">Mulai : ${ujian.valid_from}</li>
-                            <li class="list-group-item">Selesai : ${ujian.valid_upto}</li>
-                            </ul>
-                            <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                                ${buttonHtml}
+            if (dataSekarang.length != 0) {
+                jsonObj.forEach((ujian) => {
+                    let status = getUjianStatus(ujian.valid_upto);
+                    let sudah_dikerjakan = ujian.attempts.length > 0 ? true : false;
+                    let buttonHtml =
+                        status === "sekarang"
+                            ? 
+                            `<a href="/app/ujian-siswa/${ujian.id}" class="btn ${sudah_dikerjakan ? "btn-success" : "btn-primary"} waves-effect waves-light btn-kerjakan">
+                                ${sudah_dikerjakan ? "Sudah Dikerjakan" : "Kerjakan"}
+                            </a>`
+                            : `<a href="/app/ujian-siswa/${ujian.id}" class="btn btn-secondary waves-effect waves-light btn-detail">Detail</a>`;
+                    $("#ujian-cards").append(`
+                        <div class="col-md-4 card-item">
+                            <div class="card">
+                                <div class="card-body d-flex flex-column text-center">
+                                    <h4 class="card-title">
+                                    ${ujian.name}
+                                    </h4>
+                                    <p class="card-text">${ujian.topics[0].name}</p>
+                                </div>
+                                <ul class="list-group list-group-flush text-center">
+                                <li class="list-group-item">Mulai : ${ujian.valid_from}</li>
+                                <li class="list-group-item">Selesai : ${ujian.valid_upto}</li>
+                                </ul>
+                                <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                                    ${buttonHtml}
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    `);
+                });
+            } else {
+                $("#ujian-cards").append(`
+                    <div class="alert alert-primary" role="alert">
+                        <h1 class="text-center">Tidak ada ujian yang harus dikerjakan</h1>
+                    </div>  
                 `);
-            });
+            }
+            
         } else {
             console.log(areArraysIdentical(dataSekarang, jsonObj));
         }

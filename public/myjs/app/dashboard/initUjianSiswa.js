@@ -127,10 +127,13 @@ function formatDate(validFrom) {
 }
 
 async function populateSoal() {
+    const now = new Date();
     let ujianData = await axios.get(base_url + `/app/ujian/show/${id_ujian}`);
     ujianData = ujianData.data.data;
-
+    const tanggalUjian = new Date(ujianData.valid_upto.replace(" ", "T"));
+    
     const isAttempts = ujianData.attempts.length > 0 ? true : false;
+    
     const isReadonly = isAttempts ? "disabled" : "";
     if (!isAttempts) {
         $("#result").closest("tr").hide();
@@ -199,9 +202,11 @@ async function populateSoal() {
             }
         }
         result = (score / jumlahKunci) * 100;
-        $("#result").text(": " + result);
-        console.log(jawabanUjian);
-    } else {
+    }
+    else if(tanggalUjian < now){
+        result = 0;
+    }
+    else {
         await radioSelect();
         $questionContainer.append(
             `<button type="button" onclick="submitJawaban()" class="btn btn-primary my-3">Submit</button>`,
