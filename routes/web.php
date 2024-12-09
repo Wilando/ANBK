@@ -58,6 +58,8 @@ Route::group(['prefix' => 'app', 'middleware' => ['web', 'auth']], function () {
     Route::get('logout', [App\Http\Controllers\backend\ProfileController::class, 'logout'])->name('logout'); //agar logout bisa tanpa user active
     Route::middleware(['checkActiveUser'])->group(function () {
         Route::get('/', [\App\Http\Controllers\view\IndexController::class, 'index']);
+        Route::get('list-ujian-siswa', [\App\Http\Controllers\view\IndexController::class, 'listUjian']);
+        Route::get('ujian-siswa/{id}', [\App\Http\Controllers\view\IndexController::class, 'ujian']);
         Route::get('bank-soal', [\App\Http\Controllers\view\IndexController::class, 'banksoal']);
         Route::get('soal-lm', [\App\Http\Controllers\view\IndexController::class, 'soallm']);
         Route::get('literasi-numerik', [\App\Http\Controllers\view\IndexController::class, 'literasinumerik']);

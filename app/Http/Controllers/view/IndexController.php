@@ -33,16 +33,12 @@ class IndexController extends Controller
        $tanggalAwalBulan = Carbon::now()->startOfYear();
        $tanggalAkhirBulan = Carbon::now()->endOfYear();
        $data['tglAwal'] = $tanggalAwalBulan->toDateString();
-    //    $data['tglAwal'] = '2020-01-01';
        $data['tglAkhir'] = $tanggalAkhirBulan->toDateString();
 
         $startOfDay = Carbon::now()->startOfDay();
 
-// Mengambil waktu sekarang dengan waktu 23:59:59
         $endOfDay = Carbon::now()->endOfDay();
 
-        // $data['tglAwal'] = $startOfDay->toDateString();
-        // $data['tglAkhir'] = $endOfDay->toDateString();
 
         $data['titlePage'] = 'dashboard';
         $data['descriptionPage'] = 'halaman yang digunakan untuk melihat ringkasan data';
@@ -52,6 +48,24 @@ class IndexController extends Controller
         return view('panel.dashboard.index', $data);
 
 
+    }
+    
+    public function listUjian()
+    {
+
+        $data['titlePage'] = 'List Ujian';
+        $data['descriptionPage'] = 'halaman yang digunakan untuk melihat ringkasan data';
+        $data['iconPage'] = '<i class="fas fa-fw fa-chart-area me-2"></i>';
+        return view('panel.dashboard.listUjian', $data);
+    }
+    
+    public function ujian()
+    {
+
+        $data['titlePage'] = 'Ujian';
+        $data['descriptionPage'] = 'halaman yang digunakan untuk melihat ringkasan data';
+        $data['iconPage'] = '<i class="fas fa-fw fa-chart-area me-2"></i>';
+        return view('panel.dashboard.ujianSiswa', $data);
     }
 
     public function banksoal()
