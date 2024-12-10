@@ -481,4 +481,18 @@ class MisiPemdaController extends Controller
 
         return response()->json($dataRemote);
     }
+
+    public function listTopic(Request $request)
+    {
+        $dataRemote = Topic::query()->get();
+
+        return response()->json($dataRemote);
+    }
+    public function listSoalTopic(Request $request, $id)
+    {
+        $dataRemote = Topic::with(["questions.options"])->where('id', decodeId($id))->first();
+
+        return response()->json($dataRemote);
+    }
+    
 }

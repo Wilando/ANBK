@@ -7,6 +7,7 @@ use App\Models\Pengajuan;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
+use Harishdurga\LaravelQuiz\Models\Topic;
 
 class IndexController extends Controller
 {
@@ -81,56 +82,18 @@ class IndexController extends Controller
 
 
     }
-    public function soallm()
+    public function bankSoalDetail($id)
     {
       
-
         $data['titlePage'] = 'soallm';
         $data['descriptionPage'] = 'halaman yang digunakan untuk melihat ringkasan data';
         $data['iconPage'] = '<i class="fas fa-fw fa-chart-area me-2"></i>';
 
-
-        return view('panel.dashboard.soallm', $data);
+        return view('panel.dashboard.bankSoalDetail', $data);
 
 
     }
     
-    public function literasinumerik()
-    {
-      
-
-        $data['titlePage'] = 'literasinumerik';
-        $data['descriptionPage'] = 'halaman yang digunakan untuk melihat ringkasan data';
-        $data['iconPage'] = '<i class="fas fa-fw fa-chart-area me-2"></i>';
-
-
-        return view('panel.dashboard.literasinumerik', $data);
-
-    }
-    public function surveykarakter()
-    {
-      
-
-        $data['titlePage'] = 'surveykarakter';
-        $data['descriptionPage'] = 'halaman yang digunakan untuk melihat ringkasan data';
-        $data['iconPage'] = '<i class="fas fa-fw fa-chart-area me-2"></i>';
-
-
-        return view('panel.dashboard.surveykarakter', $data);
-
-    }
-    public function lingkungansekitar()
-    {
-      
-
-        $data['titlePage'] = 'lingkungansekitar';
-        $data['descriptionPage'] = 'halaman yang digunakan untuk melihat ringkasan data';
-        $data['iconPage'] = '<i class="fas fa-fw fa-chart-area me-2"></i>';
-
-
-        return view('panel.dashboard.lingkungansekitar', $data);
-
-    }
     public function onprogress()
     {
         $data['titlePage'] = 'on progress';

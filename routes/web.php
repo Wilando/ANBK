@@ -51,8 +51,6 @@ Route::get('/clear-cache', function () {
 
 Route::group(['prefix' => 'app', 'middleware' => ['web', 'auth']], function () {
 
-
-
     Route::get('account-nonactive', [\App\Http\Controllers\view\IndexController::class, 'nonaktif']);
 
     Route::get('logout', [App\Http\Controllers\backend\ProfileController::class, 'logout'])->name('logout'); //agar logout bisa tanpa user active
@@ -61,10 +59,7 @@ Route::group(['prefix' => 'app', 'middleware' => ['web', 'auth']], function () {
         Route::get('list-ujian-siswa', [\App\Http\Controllers\view\IndexController::class, 'listUjian']);
         Route::get('ujian-siswa/{id}', [\App\Http\Controllers\view\IndexController::class, 'ujian']);
         Route::get('bank-soal', [\App\Http\Controllers\view\IndexController::class, 'banksoal']);
-        Route::get('soal-lm', [\App\Http\Controllers\view\IndexController::class, 'soallm']);
-        Route::get('literasi-numerik', [\App\Http\Controllers\view\IndexController::class, 'literasinumerik']);
-        Route::get('survey-karakter', [\App\Http\Controllers\view\IndexController::class, 'surveykarakter']);
-        Route::get('lingkungan-sekitar', [\App\Http\Controllers\view\IndexController::class, 'lingkungansekitar']);
+        Route::get('bank-soal/{id}', [\App\Http\Controllers\view\IndexController::class, 'bankSoalDetail']);
         Route::get('data-dashboard', [\App\Http\Controllers\backend\IndexController::class, 'getDashboard']);
         Route::get('datatable-notif', [\App\Http\Controllers\backend\IndexController::class, 'datatable_notif']);
 
@@ -162,6 +157,8 @@ Route::group(['prefix' => 'app', 'middleware' => ['web', 'auth']], function () {
             Route::put('bulk-update', [\App\Http\Controllers\backend\MisiPemdaController::class, 'bulkUpdate']);
             Route::get('select-data', [\App\Http\Controllers\backend\MisiPemdaController::class, 'selectData']);
             Route::get('remote', [\App\Http\Controllers\backend\MisiPemdaController::class, 'remote']);
+            Route::get('list-topic', [\App\Http\Controllers\backend\MisiPemdaController::class, 'listTopic']);
+            Route::get('bank-soal-detail/{id}', [\App\Http\Controllers\backend\MisiPemdaController::class, 'listSoalTopic']);
         });
         Route::group(['prefix' => 'soal'], function () {
             Route::get('/', [\App\Http\Controllers\view\SoalController::class, 'index'])->name('app.soal');

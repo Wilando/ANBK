@@ -136,17 +136,9 @@
     <p>Bank Soal</p>
 </div>
 <!-- Wrapper besar untuk Bank Soal dan kotak pilihan lainnya -->
-<div class="big-box-wrapper">
+<div class="big-box-wrapper" id="topic-container">    
 
-     <!-- Literasi Membaca -->
-    <div class="option-box">
-        <a href="/app/soal-lm" class="option-main" >
-        <i class="fas fa-book-reader"></i>
-        <p>Literasi Membaca</p>
-        </a>
-    </div>
-
-    <!-- Literasi Numerik -->
+    <!--
     <div class="option-box">
         <a href="/app/literasi-numerik" class="option-main">
             <i class="fas fa-calculator"></i>
@@ -154,20 +146,18 @@
         </a>
     </div>
 
-    <!-- Survey Karakter -->
     <div class="option-box">
         <a href="/app/survey-karakter" class="option-main">
             <i class="fas fa-users"></i>
             <p>Survey Karakter</p>
         </a>
     </div>
-
-    <!-- Survey Lingkungan Sekitar -->
+    
     <div class="option-box">
         <a href="/app/lingkungan-sekitar" class="option-main">
         <i class="fas fa-globe"></i>
         <p>Survey Lingkungan Sekitar</p>
-    </div>
+    </div> -->
 </div>
 
 
@@ -181,5 +171,5 @@
 <script src="{{ asset("myjs/select2/init.js") }}?v={{ filemtime(public_path('myjs/select2/init.js')) }}"></script>
 <script src="{{ asset("myjs/dataTable/multiple_init.js") }}?v={{ filemtime(public_path('myjs/dataTable/multiple_init.js')) }}"></script>
 
-<script src="{{ asset("myjs/app/dashboard/init.js") }}?v={{ filemtime(public_path('myjs/app/dashboard/init.js')) }}"></script>
+<script src="{{ asset("myjs/app/dashboard/bankSoal.js") }}?v={{ filemtime(public_path('myjs/app/dashboard/bankSoal.js')) }}"></script>
 @endpush

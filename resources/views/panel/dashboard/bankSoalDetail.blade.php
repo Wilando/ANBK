@@ -19,7 +19,6 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             margin-top: 30px;
             width: 100%;
-            max-width: 900px; /* Menambah ukuran lebar maksimal kotak */
             margin-left: auto;  /* Menjaga kotak tetap terpusat */
             margin-right: auto; /* Menjaga kotak tetap terpusat */
         }
@@ -164,59 +163,13 @@
 @endpush
 
 @section("content")
-    <div class="row">
-        <div class="col-12">
-            <div class="page-title-box d-flex align-items-center justify-content-between">
-                <h4 class="mb-0"> {!! $iconPage !!} {{ ucwords($titlePage) }}</h4>
-            </div>
-        </div>
-    </div>
-
+    
     <!-- Kotak Literasi Membaca dengan soal-soal di dalamnya -->
-    <div class="literasi-container">
+    <div class="literasi-container" id="soal-container">
         <div class="literasi-box">
-            <h3>Literasi Membaca</h3>
+            <h3 id="judul-topic"></h3>
         </div>
-
-        <!-- Soal 1 tanpa radio button, hanya pilihan A, B, C, D -->
-        <div class="question-container">
-            <p>1. Apa ibu kota Indonesia yang memiliki banyak wisata, sejarah, dan budaya?</p>
-            <div class="answer">
-                <div>A. Jakarta</div>
-                <div>B. Surabaya</div>
-                <div>C. Bandung</div>
-                <div>D. Yogyakarta</div>
-            </div>
-            <!-- Kotak kunci jawaban -->
-            <div class="answer-key">Jawaban: A</div>
-        </div>
-
-        <!-- Soal 2 tanpa radio button, hanya pilihan A, B, C -->
-        <div class="question-container">
-            <p>2. Apa bahasa pemrograman utama yang digunakan di dalam pengembangan web?</p>
-            <div class="answer">
-                <div>A. JavaScript</div>
-                <div>B. Java</div>
-                <div>C. PHP</div>
-            </div>
-            <!-- Kotak kunci jawaban -->
-            <div class="answer-key">Jawaban: A</div>
-        </div>
-
-        <!-- Soal 3 tanpa radio button, hanya pilihan A, B, C -->
-        <div class="question-container">
-            <p>3. Berapa jumlah hari dalam setahun pada tahun kabisat?</p>
-            <div class="answer">
-                <div>A. 360</div>
-                <div>B. 365</div>
-                <div>C. 366</div>
-            </div>
-            <!-- Kotak kunci jawaban -->
-            <div class="answer-key">Jawaban: C</div>
-        </div>
-
-        <!-- Tombol Back -->
-        <button type="button" class="btn-submit" onclick="window.history.back();">Back</button>
+        
     </div>
 @endsection
 
@@ -233,6 +186,6 @@
     <script
         src="{{ asset('myjs/dataTable/multiple_init.js') }}?v={{ filemtime(public_path('myjs/dataTable/multiple_init.js')) }}">
     </script>
-    <script src="{{ asset('myjs/app/dashboard/init.js') }}?v={{ filemtime(public_path('myjs/app/dashboard/init.js')) }}">
+    <script src="{{ asset('myjs/app/dashboard/bankSoalDetail.js') }}?v={{ filemtime(public_path('myjs/app/dashboard/bankSoalDetail.js')) }}">
     </script>
 @endpush
