@@ -158,9 +158,9 @@ async function load_dt() {
                         let rowData = row.encode_row;
 
 
-                        let btnDetail = `<a class="btn btn-sm text-dark clickable-detail" title="detail" data-row="${rowData}"><i class="fa fa-info-circle fa-fw"></i></a>`;
+                        let btnDetail = `<a class="btn btn-sm btn-primary clickable-detail" title="detail" data-row="${rowData}">List Soal</a>`;
 
-
+                        let btnNilai = `<a class="btn btn-sm btn-secondary me-1 clickable-nilai" title="nilai" data-row="${rowData}">Nilai</a>`;
 
                         let btnEdit = '';
                         let btnDelete = '';
@@ -168,7 +168,7 @@ async function load_dt() {
 
                         let btnDeleteAksi = `<button class="btn btn-sm text-danger clickable-delete" title="hapus" data-row="${rowData}"><i class="fas fa-trash fa-fw"></i></button>`;
 
-                        if (checkPermission(permissionUpdate)) {
+                        if (checkPermission(permissionUpdate) ) {
                             btnEdit = btnEditAksi;
                         }
                         if (checkPermission(permissionDelete)) {
@@ -177,7 +177,7 @@ async function load_dt() {
 
 
 
-                        return '<div class="btn-group btn-group-sm" role="group" aria-label="First group">' + btnDetail + btnEdit + btnDelete + '</div>';
+                        return '<div class="btn-group btn-group-sm" role="group" aria-label="First group">' + btnNilai + btnDetail + btnEdit + btnDelete + '</div>';
                     }
 
                 },
@@ -207,6 +207,7 @@ async function load_dt() {
                 var totalData = tableDT.page.info().recordsDisplay;
                 if (totalData > 0) {
                     await detailByrow();
+                    await nilaiByrow();
                     await editByrow();
                     await refreshFsLightbox();
                     await exporTable(tableDT, 'div_ekspor');
@@ -241,6 +242,7 @@ async function initModal() {
         }
 
         rincianModal = new bootstrap.Modal(document.getElementById('rincianModal'));
+        nilaiModal = new bootstrap.Modal(document.getElementById('nilaiModal'));
         
     }
 
@@ -398,7 +400,56 @@ async function detailByrow() {
             }
         }
     });
+}
 
+async function nilaiByrow() {
+    $("#hideyori_datatable").on("click", ".clickable-nilai", async function () {
+        if (checkPermission(permissionRead)) {
+            let encodedRowDataString = $(this).attr('data-row');
+            let rowDataString = decodeURIComponent(encodedRowDataString);
+
+            try {
+                let row = JSON.parse(rowDataString);
+                const dateToCheck = new Date(row.valid_upto);
+                const now = new Date();
+
+                let list_nilai = await axios.get(app_url + '/ujian/list-nilai/' + row.id);
+                list_nilai = list_nilai.data;
+                console.log(list_nilai);
+                $("#tabelNilai").empty();
+
+                list_nilai.forEach(nilai => {
+                    let nilai_tampil;
+                    if (dateToCheck < now) {
+                        if (nilai.status == "tidak mengerjakan") {
+                            nilai_tampil = `<p class="fs-5 m-0"><span class="badge text-bg-danger text-black">Tidak Mengerjakan!</span></p>`;
+                        }
+                        else{
+                            nilai_tampil = nilai.nilai
+                        }
+                    } else {
+                        if (nilai.nilai == 0) {
+                            nilai_tampil = `<p class="fs-5 m-0"><span class="badge text-bg-warning text-black">Sedang Mengerjakan</span></p>`;
+                        }
+                        else{
+                            nilai_tampil = nilai.nilai;
+                        }
+                    }
+                    $("#tabelNilai").append(`
+                        <tr>
+                            <td>${nilai.nama}</td>
+                            <td>${nilai_tampil}</td>
+                        </tr>
+                    `)
+                });
+
+                nilaiModal.show();
+                await refreshFsLightbox();
+            } catch (e) {
+                console.error("Failed to parse JSON string:", e);
+            }
+        }
+    });
 }
 
 async function resetformFilter() {

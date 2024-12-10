@@ -100,12 +100,13 @@
       <nav class="navbar navbar-light navbar-expand-lg topnav-menu">
         <div class="collapse navbar-collapse" id="topnav-menu-content">
           <ul class="navbar-nav">
-
+            @hasanyrole('siswa|superadmin')
             <li class="nav-item">
               <a class="nav-link {{ request()->is('app') ? 'active' : '' }}" href="{{ url('app') }}">
                 <i class="uil-home-alt me-2"></i> Dashboard </a>
             </li>
-
+            @endhasanyrole
+            @canany('topic read', 'soal read', 'soal ujian')
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
                 <i class="uil-apps me-2"></i>Management Soal<div class="arrow-down"></div>
@@ -124,7 +125,7 @@
                     Bank Soal
                   </a>
                 @endcan
-                @can('soal ujian')
+                @can('ujian read')
                   <a href="{{ url('app/ujian') }}"
                     class="dropdown-item {{ request()->is('app/ujian') ? 'active' : '' }}">
                     Ujian
@@ -132,6 +133,7 @@
                 @endcan
               </div>
             </li>
+            @endcanany
             @include('layouts.ekstra')
 
           </ul>

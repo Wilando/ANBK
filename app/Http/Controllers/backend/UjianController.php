@@ -657,4 +657,52 @@ class UjianController extends Controller
         $res['data'] = $master;
         return response()->json($res, Response::HTTP_OK);
     }
+
+    public function listNilai($id)
+    {
+        // Decode ID quiz
+        $quizId = decodeId($id);
+
+        // Ambil data siswa dengan attempts untuk quiz tertentu
+        $users = User::role('siswa')->with(['quiz_attempts' => function ($query) use ($quizId) {
+            $query->where('quiz_id', $quizId);
+        }])->get();
+
+        // Validasi setiap attempt
+        $validationResults = $users->map(function ($user) {
+            $user->quiz_attempts = $user->quiz_attempts->map(function ($attempt) {
+                return $attempt->validate();
+            });
+            
+            if (count($user->quiz_attempts) > 0) {
+                $totalScore = 0;  // Inisialisasi nilai total
+                $totalQuestions = count($user->quiz_attempts[0]);  // Jumlah soal
+
+                // Loop melalui setiap soal untuk memeriksa apakah jawabannya benar
+                foreach ($user->quiz_attempts[0] as $soal) {
+                    if ($soal['user_answer'] === $soal['correct_answer']) {
+                        // Jika jawaban benar, tambahkan 1 poin
+                        $totalScore += 1;
+                    }
+                }
+
+                $scorePercentage = ($totalScore / $totalQuestions) * 100;
+                return [
+                    "nama"=> $user->name,
+                    "nilai" => $scorePercentage,
+                    "status" => "mengerjakan"
+                ];
+            }
+            else {
+                return [
+                    "nama"=> $user->name,
+                    "nilai" => 0,
+                    "status" => "tidak mengerjakan"
+                ];
+            }
+            
+        });
+
+        return response()->json($validationResults, Response::HTTP_OK);
+    }
 }

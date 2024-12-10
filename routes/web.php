@@ -191,6 +191,7 @@ Route::group(['prefix' => 'app', 'middleware' => ['web', 'auth']], function () {
             Route::get('list-ujian-siswa/{filter}', [\App\Http\Controllers\backend\UjianController::class, 'listUjian']);
             Route::post('input-jawaban', [\App\Http\Controllers\backend\UjianController::class, 'inputJawaban']);
             Route::get('render-jawaban/{id}', [\App\Http\Controllers\backend\UjianController::class, 'renderJawaban']);
+            Route::get('list-nilai/{id}', [\App\Http\Controllers\backend\UjianController::class, 'listNilai']);
         });
     });
 });

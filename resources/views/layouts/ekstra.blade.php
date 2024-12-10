@@ -1,3 +1,4 @@
+@canany('users read', 'activity', 'setting app')
 <li class="nav-item dropdown">
   <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
     <i class="uil-cog me-2"></i>Konfigurasi <div class="arrow-down"></div>
@@ -27,3 +28,4 @@
 
   </div>
 </li>
+@endcanany

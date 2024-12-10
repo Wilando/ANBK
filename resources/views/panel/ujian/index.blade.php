@@ -147,6 +147,7 @@
 @can($permissionRead)
 @include("panel.ujian.modalFilter")
 @include("panel.ujian.modalRincian")
+@include("panel.ujian.modalNilai")
 @endcan
 
 

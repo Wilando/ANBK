@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use Harishdurga\LaravelQuiz\Traits\QuizParticipant;
 
 // kalo pake verifikasi email
 // class User extends Authenticatable implements MustVerifyEmail
@@ -23,6 +24,7 @@ class User extends Authenticatable
     use HasFactory;
     use Notifiable;
     use HasRoles;
+    use QuizParticipant;
 
     /**
      * The attributes that are mass assignable.
