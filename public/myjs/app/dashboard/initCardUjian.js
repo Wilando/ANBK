@@ -27,21 +27,22 @@ function startSSE(url) {
     // Event saat menerima data
     eventSource.onmessage = function (event) {
         let jsonObj = JSON.parse(event.data);
-        
+
         if (!areArraysIdentical(dataSekarang, jsonObj)) {
             dataSekarang = jsonObj;
             $("#ujian-cards").empty();
             if (dataSekarang.length != 0) {
                 jsonObj.forEach((ujian) => {
                     let status = getUjianStatus(ujian.valid_upto);
-                    let sudah_dikerjakan = ujian.attempts.length > 0 ? true : false;
+                    let sudah_dikerjakan =
+                        ujian.attempts.length > 0 ? true : false;
                     let buttonHtml =
                         status === "sekarang"
-                            ? 
-                            `<a href="/app/ujian-siswa/${ujian.id}" class="btn ${sudah_dikerjakan ? "btn-success" : "btn-primary"} waves-effect waves-light btn-kerjakan">
+                            ? `<a href="/app/ujian-siswa/${ujian.id}" class="btn ${sudah_dikerjakan ? "btn-success" : "btn-primary"} waves-effect waves-light btn-kerjakan">
                                 ${sudah_dikerjakan ? "Sudah Dikerjakan" : "Kerjakan"}
                             </a>`
-                            : `<a href="/app/ujian-siswa/${ujian.id}" class="btn btn-secondary waves-effect waves-light btn-detail">Detail</a>`;
+                            : `<a href="/app/ujian-siswa/${ujian.id}" class="btn ${sudah_dikerjakan ? "btn-secondary" : "btn-danger"} waves-effect waves-light btn-detail">
+                                ${sudah_dikerjakan ? "Detail" : "Sudah Lewat"} </a>`;
                     $("#ujian-cards").append(`
                         <div class="col-md-4 card-item">
                             <div class="card">
@@ -69,7 +70,6 @@ function startSSE(url) {
                     </div>  
                 `);
             }
-            
         } else {
             console.log(areArraysIdentical(dataSekarang, jsonObj));
         }

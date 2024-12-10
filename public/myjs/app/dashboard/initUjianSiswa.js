@@ -1,35 +1,3 @@
-// function validateAndCalculate(event) {
-//     var questions = document.querySelectorAll('.question');
-
-//     for (var i = 0; i < questions.length; i++) {
-//         if (!questions[i].querySelector('input[type="radio"]:checked')) {
-//             alert('Semua soal harus dijawab terlebih dahulu!');
-//             event.preventDefault();
-//             return false;
-//         }
-//     }
-
-//     let correctAnswers = {
-//         question1: 'a',
-//         question2: 'a',
-//         question3: 'b'
-//     };
-
-//     let score = 0;
-//     let formData = new FormData(event.target);
-
-//     formData.forEach((value, key) => {
-//         if (correctAnswers[key] === value) {
-//             score++;
-//         }
-//     });
-
-//     alert('Anda mendapatkan nilai ' + score + ' dari ' + Object.keys(correctAnswers).length + ' soal.');
-
-//     event.preventDefault(); // Menghentikan submit (untuk demo)
-//     return false;
-// }
-
 // Mendapatkan path dari URL
 const path = window.location.pathname;
 const parts = path.split("/");
@@ -41,53 +9,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 async function initLoad() {
     await populateSoal();
-}
-
-function validateAndCalculate(event) {
-    var questions = document.querySelectorAll(".question");
-    for (var i = 0; i < questions.length; i++) {
-        if (!questions[i].querySelector('input[type="radio"]:checked')) {
-            alert("Semua soal harus dijawab terlebih dahulu!");
-            event.preventDefault();
-            return false;
-        }
-    }
-    var correctAnswers = {
-        question1: "a", // Jakarta
-        question2: "a", // Jakarta
-        question3: "b", // Jakarta
-    };
-    var userAnswers = {};
-    var score = 0;
-    var resultHTML = "<h4>Hasil Ujian:</h4><ul>";
-
-    // Ambil jawaban dari form
-    var formData = new FormData(event.target);
-    formData.forEach((value, key) => {
-        userAnswers[key] = value;
-    });
-
-    // Periksa jawaban
-    for (var i = 0; i < questions.length; i++) {
-        var questionId = "question" + (i + 1);
-        var userAnswer = userAnswers[questionId];
-
-        // Cek jika jawaban benar
-        if (userAnswer === correctAnswers[questionId]) {
-            score++;
-            resultHTML += `<li>Soal ${i + 1}: Benar</li>`;
-        } else {
-            resultHTML += `<li>Soal ${i + 1}: Salah, Jawaban yang benar: ${getAnswerLabel(correctAnswers[questionId], questionId)}</li>`;
-        }
-    }
-
-    resultHTML += `</ul><h5>Anda mendapatkan nilai ${score} dari ${Object.keys(correctAnswers).length} soal.</h5>`;
-
-    // Tampilkan hasil di bawah form
-    document.getElementById("result").innerHTML = resultHTML;
-
-    event.preventDefault(); // Menghentikan submit (untuk demo)
-    return false;
 }
 
 function getAnswerLabel(correctAnswer, questionId) {
@@ -134,9 +55,12 @@ async function populateSoal() {
 
     const isAttempts = ujianData.attempts.length > 0 ? true : false;
 
-    const isReadonly = isAttempts ? "disabled" : "";
-    if (!isAttempts) {
-        $("#result").closest("tr").hide();
+    // Jika tidak ada attempts dan waktu sudah melewati valid_upto, nonaktifkan jawaban
+    const isReadonly = !isAttempts && tanggalUjian < now ? "disabled" : "";
+
+    // Cek jika ujian sedang berlangsung, sembunyikan tabel Nilai
+    if (tanggalUjian > now && !isAttempts) {
+        $("#result").closest("tr").hide(); // Sembunyikan baris tabel Nilai jika ujian sedang berlangsung
     }
 
     const waktuMulai = formatDate(ujianData.valid_from);
@@ -168,8 +92,10 @@ async function populateSoal() {
         });
         $questionContainer.append(soalElement);
     });
+
     var result = 0;
     var score = 0;
+
     if (isAttempts) {
         let jawabanUjian = await axios.get(
             base_url + `/app/ujian/render-jawaban/${ujianData.attempts[0].id}`,
@@ -202,11 +128,24 @@ async function populateSoal() {
             }
         }
         result = (score / jumlahKunci) * 100;
-        $("#result").text(": " + result.toFixed(2));
+        if (result % 1 === 0) {
+            // Jika result adalah bilangan bulat, tampilkan tanpa desimal
+            $("#result").text(": " + result.toFixed(0)); // .toFixed(0) untuk membulatkan ke bilangan bulat
+        } else {
+            // Jika result adalah desimal, tampilkan dengan 2 angka desimal
+            $("#result").text(": " + result.toFixed(2)); // .toFixed(2) untuk 2 angka desimal
+        }
     } else if (tanggalUjian < now) {
+        // Jika waktu sudah lewat dan tidak ada attempts, tampilkan halaman detail dengan radio dinonaktifkan
         result = 0;
+        $("#result").text(": " + result + " ( Tidak Mengerjakan )");
+        $("#quizForm").append(
+            `<p class="text-danger">Waktu ujian telah selesai. Anda tidak bisa mengisi jawaban lagi.</p>`,
+        );
     } else {
+        // Untuk ujian yang belum selesai
         await radioSelect();
+        startTimer(tanggalUjian);
         $questionContainer.append(
             `<button type="button" onclick="submitJawaban()" class="btn btn-primary my-3">Submit</button>`,
         );
@@ -220,6 +159,17 @@ async function radioSelect() {
             radio.prop("checked", true); // Menandai radio button
         }
     });
+}
+
+function startTimer(tanggalUjian) {
+    const interval = setInterval(() => {
+        const now = new Date();
+        if (now >= tanggalUjian) {
+            clearInterval(interval);
+            // Submit otomatis saat waktu habis
+            submitJawaban(true); // True untuk menandai submit otomatis
+        }
+    }, 1000); // Periksa setiap detik
 }
 
 function checkJawaban(jawaban) {
@@ -238,18 +188,19 @@ function checkJawaban(jawaban) {
     return true; // Jika semua soal terisi, kembalikan true
 }
 
-async function submitJawaban() {
+async function submitJawaban(isAutoSubmit = false) {
     let ujianData = await axios.get(base_url + `/app/ujian/show/${id_ujian}`);
     ujianData = ujianData.data.data;
+    const tanggalUjian = new Date(ujianData.valid_upto.replace(" ", "T"));
+    const now = new Date();
 
     let reqData = {
-        id_quiz: null,
+        id_quiz: ujianData.id,
         jawaban: [],
     };
 
-    ujianData.questions.forEach((data, index) => {
-        reqData.id_quiz = ujianData.id;
-
+    // Ambil semua jawaban dari form
+    ujianData.questions.forEach((data) => {
         let jawab = {
             id_pertanyaan: data.id,
             id_jawaban: $(`input[name="${data.id}"]:checked`).val(),
@@ -257,12 +208,32 @@ async function submitJawaban() {
         reqData.jawaban.push(jawab);
     });
 
-    if (!checkJawaban(reqData.jawaban)) {
-        return;
-    }
+    if (tanggalUjian > now) {
+        // Waktu belum habis, periksa jawaban kosong
+        if (!checkJawaban(reqData.jawaban)) {
+            return; // Jika ada jawaban kosong, hentikan pengiriman
+        }
+    } else {
+        // Waktu sudah habis, isi jawaban kosong dengan nilai 0
+        reqData.jawaban.forEach((item) => {
+            if (item.id_jawaban === undefined) {
+                item.id_jawaban = 0;
+            }
+        });
 
+        if (isAutoSubmit) {
+            Swal.fire({
+                icon: "info",
+                title: "Waktu ujian habis. Jawaban tersubmit otomatis.",
+            }).then(() => {
+                // Callback setelah alert ditutup
+                window.location.href = app_url + "/list-ujian-siswa";
+            });
+        }
+    }
     try {
-        response_form = await axios.post(
+        // Kirim jawaban ke server
+        const response_form = await axios.post(
             app_url + "/ujian/input-jawaban",
             reqData,
         );
